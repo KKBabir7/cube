@@ -853,6 +853,9 @@ body {
 body{
   cursor: auto;
 }
+#videoBackground{
+  object-fit: cover !important;
+}
 .main-container-block
 
  {
