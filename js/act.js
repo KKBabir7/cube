@@ -2845,13 +2845,24 @@ $("#grp" + grpCounter + " #rotategrp3").css({ top: groupHeight + "px" });
   });
 
 
-
+// dd
 function initTouchSupport() {
     var touchTimer;
     var longPressDuration = 500; // 500ms for long press
     var touchStartX, touchStartY;
     var touchMoved = false;
-    
+        $(document).on('touchstart', '.drop-container, .drop-box-container', function(e) {
+        // Only trigger for empty areas (not on cubes)
+        if ($(e.target).closest(".cubes, .cubes-clone, .grpCont").length === 0) {
+            var touch = e.originalEvent.touches[0];
+            
+            // Start timer for long press
+            touchTimer = setTimeout(function() {
+                showEmptyAreaMenuForTouch(touch.clientX, touch.clientY);
+                touchTimer = null;
+            }, longPressDuration);
+        }
+    });
     // Touch start event
     $(document).on('touchstart', '.cubes, .cubes-clone', function(e) {
         var touch = e.originalEvent.touches[0];
@@ -2941,7 +2952,24 @@ function initTouchSupport() {
         touchTimer = null;
     });
 }
-
+// NEW: Show empty area menu for touch devices
+function showEmptyAreaMenuForTouch(x, y) {
+    // Position and show menu
+    positionCubeMenu(x, y);
+    
+    // Show only Paste option when touching empty drop container
+    $("#cubeMenu button").hide();
+    $("#cubeMenu .cube-menu-section").hide();
+    $("#cubeMenu hr").hide();
+    
+    if (copiedCubeData) {
+        $("#cubeMenu button[data-action='paste']").show();
+        $("#cubeMenuMessage").hide();
+    } else {
+        // If no copied data, show the message
+        $("#cubeMenuMessage").text("You have no copy cube").show();
+    }
+}
 // NEW: Show cube menu for touch devices
 function showCubeMenuForTouch(e, cube) {
     // Add visual feedback
