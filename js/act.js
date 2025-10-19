@@ -2940,8 +2940,84 @@ function initTouchSupport() {
         clearTimeout(touchTimer);
         touchTimer = null;
     });
-}
+    // peste cube tousch 
+        // NEW: Touch start event for empty areas (outside cubes)
+    $(document).on('touchstart','.drop-container, .drop-box-container', function(e) {
+        // Only trigger if not touching a cube or group
+        if (!$(e.target).closest(".cubes, .cubes-clone, .grpCont").length) {
+            var touch = e.originalEvent.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            touchMoved = false;
+            
+            currentRightClickedCube = null;
+            
+            // Start timer for long press
+            touchTimer = setTimeout(function() {
+                showEmptyAreaMenuForTouch(e);
+            }, longPressDuration);
+        }
+    });
+    
+    // Touch move event - cancel long press if user moves finger
+    $(document).on('touchmove','.drop-container, .drop-box-container', function(e) {
+        if (!touchTimer) return;
+        
+        var touch = e.originalEvent.touches[0];
+        var deltaX = Math.abs(touch.clientX - touchStartX);
+        var deltaY = Math.abs(touch.clientY - touchStartY);
+        
+        // If moved more than 10px, consider it a drag and cancel long press
+        if (deltaX > 10 || deltaY > 10) {
+            touchMoved = true;
+            clearTimeout(touchTimer);
+            touchTimer = null;
+        }
+    });
+    
+    // Touch end event - cancel long press
+    $(document).on('touchend','.drop-container, .drop-box-container', function(e) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+        
+        // If it was a short tap on a cube (not long press and not moved), handle as click
+        if (!touchMoved && currentRightClickedCube && !currentRightClickedCube.hasClass('menu-shown')) {
+            setTimeout(function() {
+                handleCubeTap(currentRightClickedCube);
+            }, 100);
+        }
+        
+        // Remove menu-shown class after a delay
+        setTimeout(function() {
+            $('.cubes, .cubes-clone').removeClass('menu-shown');
+        }, 500);
+    });
 
+
+}
+function showEmptyAreaMenuForTouch(e) {
+    var touch = e.originalEvent.touches[0];
+    var x = touch.clientX;
+    var y = touch.clientY;
+    
+    // Position and show menu
+    positionCubeMenu(x, y);
+    
+    // Show only Paste option when touching empty area
+    $("#cubeMenu button").hide();
+    $("#cubeMenu .cube-menu-section").hide();
+    $("#cubeMenu hr").hide();
+    
+    if (copiedCubeData) {
+        $("#cubeMenu button[data-action='paste']").show();
+        $("#cubeMenuMessage").hide();
+    } else {
+        // Show message when no cube is copied
+        $("#cubeMenuMessage").text("You have no copy cube").show();
+    }
+    
+    e.preventDefault();
+}
 // NEW: Show cube menu for touch devices
 function showCubeMenuForTouch(e, cube) {
     // Add visual feedback
