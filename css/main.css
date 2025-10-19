@@ -865,10 +865,11 @@ body {
         margin-top: 2px;
         padding-bottom: 7px;
         padding-top: 7px;
+                z-index: 99999;
             border-top: 0px solid #d3d3d3;
   }
   .menubar-conatiner{
-    gap: 8px !important;
+    gap: 6px !important;
   }
   .main-container-block .menubar-conatiner label{
     display: none;
@@ -925,17 +926,38 @@ body {
 }
 
 .tool-container{
-  width: 93px;
-      height: 92vh;
+  width: 48px;
+     
 }
+.tool-container::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* Track */
+.tool-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.tool-container::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+
+
   .tool-grp {
-    width: 80px;
+    width: 38px;
     border: 0px solid skyblue;
        padding: 6px;
     margin-right: 0px;
     margin-top: 2px;
+            padding-bottom: 50px;
   }
-  
+  #select2-themeSelect-results{
+           width: 113px !important;
+        margin-left: -68px;
+        background: #fff;
+  }
 .themechnager-menubar h3
 
  {
@@ -992,6 +1014,17 @@ body {
     height: 44px;
     margin: 0px;
   }
+
+    #cubeMenu button {
+        padding: 10px 10px !important;
+        font-size: 12px !important;
+        text-align: left !important;
+        padding-left: 37px !important;
+    }
+.cube-menu-section,.cube-menu-message
+ {
+  
+    font-size: 13px;}
  
 }
 
