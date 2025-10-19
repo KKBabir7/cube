@@ -2942,7 +2942,7 @@ function initTouchSupport() {
     });
     // peste cube tousch 
         // NEW: Touch start event for empty areas (outside cubes)
-    $(document).on('touchstart','.drop-container, .drop-box-container', function(e) {
+    $(document).on('touchstart', function(e) {
         // Only trigger if not touching a cube or group
         if (!$(e.target).closest(".cubes, .cubes-clone, .grpCont").length) {
             var touch = e.originalEvent.touches[0];
@@ -2960,7 +2960,7 @@ function initTouchSupport() {
     });
     
     // Touch move event - cancel long press if user moves finger
-    $(document).on('touchmove','.drop-container, .drop-box-container', function(e) {
+    $(document).on('touchmove', function(e) {
         if (!touchTimer) return;
         
         var touch = e.originalEvent.touches[0];
@@ -2976,7 +2976,7 @@ function initTouchSupport() {
     });
     
     // Touch end event - cancel long press
-    $(document).on('touchend','.drop-container, .drop-box-container', function(e) {
+    $(document).on('touchend', function(e) {
         clearTimeout(touchTimer);
         touchTimer = null;
         
@@ -2995,29 +2995,7 @@ function initTouchSupport() {
 
 
 }
-function showEmptyAreaMenuForTouch(e) {
-    var touch = e.originalEvent.touches[0];
-    var x = touch.clientX;
-    var y = touch.clientY;
-    
-    // Position and show menu
-    positionCubeMenu(x, y);
-    
-    // Show only Paste option when touching empty area
-    $("#cubeMenu button").hide();
-    $("#cubeMenu .cube-menu-section").hide();
-    $("#cubeMenu hr").hide();
-    
-    if (copiedCubeData) {
-        $("#cubeMenu button[data-action='paste']").show();
-        $("#cubeMenuMessage").hide();
-    } else {
-        // Show message when no cube is copied
-        $("#cubeMenuMessage").text("You have no copy cube").show();
-    }
-    
-    e.preventDefault();
-}
+
 // NEW: Show cube menu for touch devices
 function showCubeMenuForTouch(e, cube) {
     // Add visual feedback
