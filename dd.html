@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Kids Theme Background</title>
+
+<!-- ✅ Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    transition: background 0.5s ease;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background video */
+  .background-video {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  /* Image overlay */
+  .overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+  }
+
+  #tool-container-theme {
+    width: 20%;
+    height: 100vh;
+    float: left;
+    padding: 20px;
+    background: rgba(255,255,255,0.85);
+    transition: opacity 0.5s ease;
+  }
+  #main {
+    width: 80%;
+    float: left;
+    height: 100vh;
+    padding: 24px;
+    background: rgba(255,255,255,0.9);
+  }
+  select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+</style>
+</head>
+
+<body>
+  <div id="tool-container-theme">
+    <h3>🎨 Select Theme</h3>
+    <select id="themeSelect" class="themeSelect">
+      <optgroup label="🖼️ Image Themes">
+        <option value="hill">Hill Theme</option>
+        <option value="candy">Candy Theme</option>
+      </optgroup>
+      <optgroup label="🎬 Video Themes">
+        <option value="car">Car Theme</option>
+      </optgroup>
+      <optgroup label="🎨 Default Themes">
+        <option value="white">White</option>
+        <option value="black">Black</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <div id="main">
+    <h1>Kids Theme Demo</h1>
+    <p>This theme loads locally (image/video/color) but saves selection remotely via JSONBin.</p>
+  </div>
+
+<!-- ✅ Select2 & jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('#themeSelect').select2();
+
+  const themeSelect = document.getElementById('themeSelect');
+  const toolContainer = document.getElementById('tool-container-theme');
+
+  // ✅ Your JSONBin info
+  const BIN_ID = "68eb0729ae596e708f0f1e67";
+  const GET_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
+  const PUT_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+  const MASTER_KEY = "$2a$10$u7Mi.anzXWGXJSSlNcetHOp91wqYtvvmtX7KYz.CbBplCZud7TV0i";
+
+  // ✅ Local themes object
+  const themes = {
+    image: {
+      hill: { type: "image", path: "assets/theme/hill.png", opacity: 0.5 },
+      candy: { type: "image", path: "assets/theme/candy.png", opacity: 0.6 }
+    },
+    video: {
+      car: { type: "video", path: "assets/theme/car.mp4", opacity: 0.4 }
+    },
+    default: {
+      white: { type: "color", color: "#ffffff", opacity: 0.7 },
+      black: { type: "color", color: "#000000", opacity: 0.7 }
+    }
+  };
+
+  let activeVideo = null;
+
+  function clearBackground() {
+    document.querySelectorAll('.background-video, .overlay').forEach(el => el.remove());
+  }
+
+  function applyTheme(themeName) {
+    clearBackground();
+    let theme = null;
+
+    for (const cat in themes) {
+      if (themes[cat][themeName]) {
+        theme = themes[cat][themeName];
+        break;
+      }
+    }
+    if (!theme) return;
+
+    // Apply background
+    if (theme.type === "image") {
+      const overlay = document.createElement("div");
+      overlay.className = "overlay";
+      overlay.style.backgroundImage = `url('${theme.path}')`;
+      document.body.appendChild(overlay);
+    } else if (theme.type === "video") {
+      const video = document.createElement("video");
+      video.className = "background-video";
+      video.src = theme.path;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      document.body.appendChild(video);
+      activeVideo = video;
+    } else if (theme.type === "color") {
+      document.body.style.background = theme.color;
+    }
+
+    toolContainer.style.opacity = theme.opacity || 0.5;
+  }
+
+  // ✅ Load from JSONBin
+  async function loadTheme() {
+    try {
+      const res = await fetch(GET_URL, { headers: { 'X-Master-Key': MASTER_KEY } });
+      const data = await res.json();
+      const theme = data.record?.theme || "hill";
+      themeSelect.value = theme;
+      $('#themeSelect').val(theme).trigger('change.select2');
+      applyTheme(theme);
+    } catch (err) {
+      console.error("Load error:", err);
+    }
+  }
+
+  // ✅ Save to JSONBin
+  async function saveTheme(theme) {
+    try {
+      await fetch(PUT_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': MASTER_KEY
+        },
+        body: JSON.stringify({ theme })
+      });
+    } catch (err) {
+      console.error("Save error:", err);
+    }
+  }
+
+  // ✅ On select change
+  $('#themeSelect').on('change', async function() {
+    const selectedTheme = $(this).val();
+    applyTheme(selectedTheme);
+    await saveTheme(selectedTheme);
+  });
+
+  // ✅ On page load
+  loadTheme();
+});
+</script>
+</body>
+</html>

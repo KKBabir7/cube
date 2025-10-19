@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cube Selector</title>
+
+  <!-- Select2 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    .cube-container-block {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .cubes {
+      width: 100px;
+      height: 100px;
+      position: relative;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .spearateCubes img {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Select2 dropdown -->
+  <label for="cubeTypeSelector"><b>Select Cube Type:</b></label>
+  <select id="cubeTypeSelector" style="width: 200px;">
+    <option value="kids" selected>Kids Cube</option>
+    <option value="raw">Raw Cube</option>
+    <option value="2d">2D Cube</option>
+  </select>
+
+  <!-- Cube Container -->
+  <div class="cube-container-block">
+    <!-- Example cubes -->
+    <div id="cube1" class="cubes clickable ui-draggable">
+      <div class="spearateCubes">
+        <img src="assets/images/arrow.png" />
+      </div>
+      <img src="assets/images/cube1.png" style="width:100%;height:100%;" />
+    </div>
+
+    <div id="cube2" class="cubes clickable ui-draggable">
+      <div class="spearateCubes">
+        <img src="assets/images/arrow.png" />
+      </div>
+      <img src="assets/images/cube2.png" style="width:100%;height:100%;" />
+    </div>
+
+    <div id="cube3" class="cubes clickable ui-draggable">
+      <div class="spearateCubes">
+        <img src="assets/images/arrow.png" />
+      </div>
+      <img src="assets/images/cube3.png" style="width:100%;height:100%;" />
+    </div>
+
+    <div id="cube4" class="cubes clickable ui-draggable">
+      <div class="spearateCubes">
+        <img src="assets/images/arrow.png" />
+      </div>
+      <img src="assets/images/cube4.png" style="width:100%;height:100%;" />
+    </div>
+
+    <div id="cube5" class="cubes clickable ui-draggable">
+      <div class="spearateCubes">
+        <img src="assets/images/arrow.png" />
+      </div>
+      <img src="assets/images/cube5.png" style="width:100%;height:100%;" />
+    </div>
+  </div>
+
+  <!-- jQuery + Select2 JS -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <script>
+  $(document).ready(function () {
+    // ✅ Initialize Select2
+    $("#cubeTypeSelector").select2({
+      placeholder: "Select Cube Type"
+    });
+
+    // ✅ JSONBin configuration
+    const BIN_URL = "https://api.jsonbin.io/v3/b/68f3b235ae596e708f1af648";
+    const ACCESS_KEY = "$2a$10$eK5ypsmcWaRFGPwUXfH1MOfRduNdtR/6f.ZRb/EcjkVfsgY2jvg2u";
+    const MASTER_KEY = "$2a$10$u7Mi.anzXWGXJSSlNcetHOp91wqYtvvmtX7KYz.CbBplCZud7TV0i";
+
+    // ✅ Load cube type from JSONBin
+    $.ajax({
+      url: `${BIN_URL}/latest`,
+      headers: {
+        "X-Access-Key": ACCESS_KEY,
+        "X-Master-Key": MASTER_KEY
+      },
+      success: function (res) {
+        const cubeType = res.record.cubeType || "kids";
+        $("#cubeTypeSelector").val(cubeType).trigger("change");
+        changeCubeImages(cubeType);
+      },
+      error: function () {
+        changeCubeImages("kids");
+      }
+    });
+
+    // ✅ When cube type changes
+    $("#cubeTypeSelector").on("change", function () {
+      const selectedType = $(this).val();
+      changeCubeImages(selectedType);
+      saveCubeType(selectedType);
+    });
+
+    // ✅ Change cube images based on type
+    function changeCubeImages(type) {
+      $(".cube-container-block .cubes").each(function (index) {
+        const cubeNum = index + 1;
+        let newSrc = "";
+
+        if (type === "raw") newSrc = `assets/images/rawcube/cube${cubeNum}.png`;
+        else if (type === "2d") newSrc = `assets/images/cube2d/cube${cubeNum}.png`;
+        else newSrc = `assets/images/cube${cubeNum}.png`;
+
+        $(this).find("img:last").attr("src", newSrc);
+      });
+    }
+
+    // ✅ Save selected cube type to JSONBin
+    function saveCubeType(type) {
+      $.ajax({
+        url: BIN_URL,
+        type: "PUT",
+        contentType: "application/json",
+        headers: {
+          "X-Access-Key": ACCESS_KEY,
+          "X-Master-Key": MASTER_KEY
+        },
+        data: JSON.stringify({ cubeType: type }),
+        success: function () {
+          console.log("✅ Cube type saved to JSONBin:", type);
+        },
+        error: function (err) {
+          console.error("❌ Error saving to JSONBin:", err);
+        }
+      });
+    }
+  });
+  </script>
+</body>
+</html>
