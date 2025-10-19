@@ -170,7 +170,7 @@ body {
   position: absolute;
   bottom: 0;
   background: #34393d84;
-  width: 54px;
+  width: 100%;
   height: 1px;
   left: 0;
   z-index: 0;
@@ -849,67 +849,134 @@ body {
   margin-top: 10px;
 }
 
-@media only screen and (max-width: 700px) {
-  .tool-grp {
-    width: 121px;
-    border: 5px solid skyblue;
-    border-radius: 8px;
-    display: inline-block;
-    float: right;
-    margin-right: 23px;
-    margin-top: 0px;
+@media only screen and (max-width: 768px) {
+.secondmenubar {
+              position: fixed;
+        left: 0px;
+        bottom: 0px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        z-index: 9999;
+        gap: 5px;
+        background: #ffffff42;
+        width: 100%;
+        padding-left: 2px;
+        padding-right: 2px;
+        margin-top: 2px;
+        padding-bottom: 7px;
+        padding-top: 7px;
+            border-top: 0px solid #d3d3d3;
   }
-  .cubes,
-  .cubes-clone {
-    width: 45px;
-    height: 56px;
-    margin: 5px;
+  .menubar-conatiner{
+    gap: 8px !important;
   }
-  #undo {
-    margin-left: 8px;
-    width: 30px;
+  .main-container-block .menubar-conatiner label{
+    display: none;
   }
-  #eraser {
-    width: 40px;
+#select2-cubeTypeSelector-results {
+    font-size: 10px;
+    
+    margin-left: -29px;
+  }
 
-    margin-left: 8px;
+#pencil,#eraser,#undo{
+    width: 22px;
+    height: 22px;
+    padding: 2px;
+    border: 1px solid #cecbcb00;
+    border-radius: 12px;
+}
+#eraser img {
+    width: 22px !important;
+}
+#undore, #redore {
+    width: 22px;
+    height: 22px;
   }
-  #pencil {
-    /* margin-left:10px; */
+#undore img, #redore img {
+    width: 22px !important;
+    height:22px !important;
+}
+#screenshot, #groupCount {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
   }
+#screenshot img, #groupCount img{
+ width: 22px !important;
+    height: 22px !important;
+}
+.cubecnager .select2-container .select2-selection--single, .cubecnager .select2-container
+
+ {
+    height: 23px !important;
+    width: 23px !important;
+}
+.cubecnager .select2-container--default .select2-selection--single {
+   
+    border-radius: 5px !important;
+   
+}
+.cubecnager .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 7px;
+    font-size: 7px;
+    height: 23px;
+    padding-top: 5px;
+}
+
+.tool-container{
+  width: 93px;
+      height: 92vh;
+}
+  .tool-grp {
+    width: 80px;
+    border: 0px solid skyblue;
+       padding: 6px;
+    margin-right: 0px;
+    margin-top: 2px;
+  }
+  
+.themechnager-menubar h3
+
+ {
+    margin-top: 9px;
+    font-size: 10px;
+}
+.themechnager-menubar h3 img{
+  width: 14px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    font-size: 10px;
+  }
+.theme-option {
+    padding: 2px 0;
+    font-size: 10px;
+            white-space: nowrap;
+}
+.theme-option img {
+    width: 10px;
+    height: 10px;
+        margin-right: 3px;
+                margin-top: -3px;
+  }
+.select2-container--default .select2-results__option .select2-results__option {
+    padding-left: 4px !important;
+}
+.select2-container--default .select2-results__group
+
+ {
+   
+    padding:3px;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
   .downcont {
     top: 60%;
   }
-}
 
-@media only screen and (max-width: 750px) {
-  .tool-grp {
-    width: 121px;
-    border: 5px solid skyblue;
-    border-radius: 8px;
-    display: inline-block;
-    float: right;
-    margin-right: 23px;
-    margin-top: 2px;
-  }
-  .cubes,
-  .cubes-clone {
-    width: 45px;
-    height: 56px;
-    margin: 5px;
-  }
-  #undo {
-    margin-left: 8px;
-    width: 30px;
-  }
-  #eraser {
-    width: 40px;
-
-    margin-left: 8px;
-  }
-}
-
-@media only screen and (max-width: 700px) {
   .uppercont {
     height: 14px;
   }
@@ -918,61 +985,17 @@ body {
     width: 20px;
     height: 20px;
   }
-  .tool-grp {
-    width: 99px;
-    border: 5px solid skyblue;
-    border-radius: 8px;
-    display: inline-block;
-    float: right;
-    margin-right: 23px;
-    margin-top: 2px;
-  }
+
   .cubes,
   .cubes-clone {
     width: 35px;
     height: 44px;
-    margin: 5px;
+    margin: 0px;
   }
-  #undo {
-    margin-left: 26px;
-    width: 30px;
-  }
-  #eraser {
-    width: 30px;
-
-    margin-left: 8px;
-  }
+ 
 }
 
-@media only screen and (max-width: 500px) {
-  .tool-grp {
-    margin-right: 10px;
-  }
-}
 
-@media only screen and (max-height: 500px) {
-  .cubes,
-  .cubes-clone {
-    margin: 0;
-    margin-left: 9px;
-    margin-top: 2px;
-  }
-  .tool-grp {
-    margin-right: 10px;
-  }
-  #info {
-    bottom: -2%;
-  }
-
-  #logo {
-    bottom: 0%;
-  }
-  #undo {
-    width: 27px;
-    margin-left: 46px;
-    padding: 0px;
-  }
-}
       /* Responsive design */
       @media (max-width: 480px) {
         .cube-properties-content {
