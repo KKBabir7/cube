@@ -621,6 +621,7 @@ body {
         background-color: transparent;
       }
       .cube-menu {
+         margin-top:-20px;
         position: fixed;
         background: white;
         border: 1px solid #ccc;
@@ -856,6 +857,9 @@ body{
 #videoBackground{
   object-fit: cover !important;
 }
+#cubeMenu {
+        min-width: 150px !important;
+      }
 .main-container-block
 
  {

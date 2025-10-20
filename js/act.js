@@ -1413,11 +1413,7 @@ $("#cubeMenu").on("click touchstart", "button", function(e) {
     handleCubeMenuAction(action);
     $("#cubeMenu").hide();
 });
-    // Menu button handlers
-    // $("#cubeMenu").on("click", "button", function() {
-    //   var action = $(this).data("action");
-    //   handleCubeMenuAction(action);
-    // });
+// newsssf
 
   if (isTouchDevice()) {
         initTouchSupport();
@@ -2995,7 +2991,100 @@ function handleCubeTap(cube) {
     // This should match what you have in the click handler
 }
 
-// gropupeeed
+// gropupeeednewearager
+// Update the eraser functionality to follow cursor
+function initEraserFollow() {
+    const eraser = $("#eraser");
+    const ghost = document.getElementById("cursor-ghost");
+    
+    let isEraserActive = false;
+    
+    // When eraser is clicked
+    eraser.off("click").on("click", function() {
+        $("body").removeAttr("style");
+        $("body").removeAttr("class");
+
+        if (isSelectedTool != "eraser") {
+            console.log("eraser selected");
+            isSelectedTool = "eraser";
+            isEraserActive = true;
+            
+            $(this).removeClass("enabled");
+            $(this).addClass("disabled");
+            $("#canvas-area").css({ "pointer-events": "none" });
+            $("body").addClass("addcursor");
+            $("body").removeClass("addcursorPencil");
+            $(this).css({ opacity: 1 });
+            $("#pencil").css({ opacity: 0.6 });
+            showHideSeparateRotateToolInGrp(false);
+            
+            // Show and set eraser ghost cursor
+            if (ghost) {
+                ghost.src = "assets/images/eraser.png";
+                ghost.style.transform = "translate(-16px, -16px)";
+                ghost.style.display = "block";
+                document.body.classList.add("hide-native-cursor");
+            }
+        } else {
+            isSelectedTool = "";
+            isEraserActive = false;
+            $("#canvas-area").css({ "pointer-events": "auto" });
+            $(".cubes-clone").off("hover");
+            $(this).addClass("enabled");
+            $(this).removeClass("disabled");
+            $("body").removeClass("addcursor");
+            $("body").removeClass("addcursorPencil");
+            showHideSeparateRotateToolInGrp(true);
+            $(this).css({ opacity: 0.6 });
+            
+            // Hide ghost cursor
+            if (ghost) {
+                ghost.style.display = "none";
+                document.body.classList.remove("hide-native-cursor");
+            }
+            resetTools();
+        }
+    });
+
+    // Make eraser follow mouse/touch movement
+    $(document).on("mousemove touchmove", function(e) {
+        if (!isEraserActive || !ghost) return;
+        
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        
+        if (clientX && clientY) {
+            ghost.style.left = clientX + "px";
+            ghost.style.top = clientY + "px";
+        }
+    });
+
+    // Hide ghost cursor when not over the stage
+    const stage = document.querySelector(".drop-box-container") || document.body;
+    
+    function updateGhostVisibility(e) {
+        if (!isEraserActive || !ghost) return;
+        
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        
+        if (clientX && clientY) {
+            const rect = stage.getBoundingClientRect();
+            const isInStage = 
+                clientX >= rect.left && 
+                clientX <= rect.right && 
+                clientY >= rect.top && 
+                clientY <= rect.bottom;
+            
+            ghost.style.display = isInStage ? "block" : "none";
+        }
+    }
+    
+    $(document).on("mousemove touchmove", updateGhostVisibility);
+}
+
+// Initialize the eraser follow functionality
+initEraserFollow();
 // NEW: Toggle group count display
 function toggleGroupCountDisplay() {
     isGroupCountActive = !isGroupCountActive;
