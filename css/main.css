@@ -941,7 +941,8 @@ body{
 
 .tool-container{
   width: 48px;
-  height: 80vh;
+
+  
      
 }
 .tool-container::-webkit-scrollbar {
