@@ -1414,10 +1414,10 @@ $("#cubeMenu").on("click touchstart", "button", function(e) {
     $("#cubeMenu").hide();
 });
     // Menu button handlers
-    $("#cubeMenu").on("click", "button", function() {
-      var action = $(this).data("action");
-      handleCubeMenuAction(action);
-    });
+    // $("#cubeMenu").on("click", "button", function() {
+    //   var action = $(this).data("action");
+    //   handleCubeMenuAction(action);
+    // });
 
   if (isTouchDevice()) {
         initTouchSupport();
