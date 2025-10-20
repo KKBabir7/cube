@@ -2844,26 +2844,153 @@ $("#grp" + grpCounter + " #rotategrp3").css({ top: groupHeight + "px" });
     }
   });
 
+// ddd
 
-// dd
+// function initTouchSupport() {
+//     var touchTimer;
+//     var longPressDuration = 500; // 500ms for long press
+//     var touchStartX, touchStartY;
+//     var touchMoved = false;
+    
+//     // Touch start event
+//     $(document).on('touchstart', '.cubes, .cubes-clone', function(e) {
+//         var touch = e.originalEvent.touches[0];
+//         touchStartX = touch.clientX;
+//         touchStartY = touch.clientY;
+//         touchMoved = false;
+        
+//         // Store the touched cube
+//         currentRightClickedCube = $(this);
+        
+//         // Start timer for long press
+//         touchTimer = setTimeout(function() {
+//             showCubeMenuForTouch(e, currentRightClickedCube);
+//         }, longPressDuration);
+        
+//         e.preventDefault();
+//     });
+    
+//     // Touch move event - cancel long press if user moves finger
+//     $(document).on('touchmove', '.cubes, .cubes-clone', function(e) {
+//         if (!touchTimer) return;
+        
+//         var touch = e.originalEvent.touches[0];
+//         var deltaX = Math.abs(touch.clientX - touchStartX);
+//         var deltaY = Math.abs(touch.clientY - touchStartY);
+        
+//         // If moved more than 10px, consider it a drag and cancel long press
+//         if (deltaX > 10 || deltaY > 10) {
+//             touchMoved = true;
+//             clearTimeout(touchTimer);
+//             touchTimer = null;
+//         }
+//     });
+    
+//     // Touch end event - cancel long press
+//     $(document).on('touchend', '.cubes, .cubes-clone', function(e) {
+//         clearTimeout(touchTimer);
+//         touchTimer = null;
+        
+//         // If it was a short tap (not long press and not moved), handle as click
+//         if (!touchMoved && !$(this).hasClass('menu-shown')) {
+//             // Use existing click handling
+//             setTimeout(function() {
+//                 handleCubeTap(currentRightClickedCube);
+//             }, 100);
+//         }
+        
+//         // Remove menu-shown class after a delay
+//         setTimeout(function() {
+//             $('.cubes, .cubes-clone').removeClass('menu-shown');
+//         }, 500);
+//     });
+    
+//     // Touch for empty drop container area
+//     $(document).on('touchstart', '.drop-container, .drop-box-container', function(e) {
+//         if (!$(e.target).closest(".cubes, .cubes-clone, .grpCont").length) {
+//             var touch = e.originalEvent.touches[0];
+//             touchStartX = touch.clientX;
+//             touchStartY = touch.clientY;
+//             touchMoved = false;
+            
+//             currentRightClickedCube = null;
+            
+//             // Start timer for long press
+//             touchTimer = setTimeout(function() {
+//                 showEmptyAreaMenuForTouch(e);
+//             }, longPressDuration);
+//         }
+//     });
+    
+//     $(document).on('touchmove', '.drop-container, .drop-box-container', function(e) {
+//         if (!touchTimer) return;
+        
+//         var touch = e.originalEvent.touches[0];
+//         var deltaX = Math.abs(touch.clientX - touchStartX);
+//         var deltaY = Math.abs(touch.clientY - touchStartY);
+        
+//         if (deltaX > 10 || deltaY > 10) {
+//             touchMoved = true;
+//             clearTimeout(touchTimer);
+//             touchTimer = null;
+//         }
+//     });
+    
+//     $(document).on('touchend', '.drop-container, .drop-box-container', function(e) {
+//         clearTimeout(touchTimer);
+//         touchTimer = null;
+//     });
+// }
+
+// // NEW: Show cube menu for touch devices
+// function showCubeMenuForTouch(e, cube) {
+//     // Add visual feedback
+//     cube.addClass('menu-shown');
+    
+//     // Get touch position
+//     var touch = e.originalEvent.touches[0];
+//     var x = touch.clientX;
+//     var y = touch.clientY;
+    
+//     // Position and show menu
+//     positionCubeMenu(x, y);
+//     updateMenuForCube(cube);
+    
+//     // Prevent default behavior
+//     e.preventDefault();
+// }
+
+// // NEW: Show empty area menu for touch devices
+// function showEmptyAreaMenuForTouch(e) {
+//     var touch = e.originalEvent.touches[0];
+//     var x = touch.clientX;
+//     var y = touch.clientY;
+    
+//     // Position and show menu
+//     positionCubeMenu(x, y);
+//     $("#cubeMenu button").hide();
+//     $("#cubeMenu .cube-menu-section").hide();
+//     $("#cubeMenu hr").hide();
+//     // Show only Paste option when touching empty drop container
+//     if (copiedCubeData) {
+//        $("#cubeMenu button[data-action='paste']").show();
+//         $("#cubeMenuMessage").hide();
+//     } else {
+//         // Show message when no cube is copied
+//       $("#cubeMenuMessage").text("You have no copy cube").show();
+//     }
+    
+//     e.preventDefault();
+// }
+
+
 function initTouchSupport() {
     var touchTimer;
     var longPressDuration = 500; // 500ms for long press
     var touchStartX, touchStartY;
     var touchMoved = false;
-        $(document).on('touchstart', '.drop-container, .drop-box-container', function(e) {
-        // Only trigger for empty areas (not on cubes)
-        if ($(e.target).closest(".cubes, .cubes-clone, .grpCont").length === 0) {
-            var touch = e.originalEvent.touches[0];
-            
-            // Start timer for long press
-            touchTimer = setTimeout(function() {
-                showEmptyAreaMenuForTouch(touch.clientX, touch.clientY);
-                touchTimer = null;
-            }, longPressDuration);
-        }
-    });
-    // Touch start event
+    
+    // Touch start event for cubes
     $(document).on('touchstart', '.cubes, .cubes-clone', function(e) {
         var touch = e.originalEvent.touches[0];
         touchStartX = touch.clientX;
@@ -2881,43 +3008,9 @@ function initTouchSupport() {
         e.preventDefault();
     });
     
-    // Touch move event - cancel long press if user moves finger
-    $(document).on('touchmove', '.cubes, .cubes-clone', function(e) {
-        if (!touchTimer) return;
-        
-        var touch = e.originalEvent.touches[0];
-        var deltaX = Math.abs(touch.clientX - touchStartX);
-        var deltaY = Math.abs(touch.clientY - touchStartY);
-        
-        // If moved more than 10px, consider it a drag and cancel long press
-        if (deltaX > 10 || deltaY > 10) {
-            touchMoved = true;
-            clearTimeout(touchTimer);
-            touchTimer = null;
-        }
-    });
-    
-    // Touch end event - cancel long press
-    $(document).on('touchend', '.cubes, .cubes-clone', function(e) {
-        clearTimeout(touchTimer);
-        touchTimer = null;
-        
-        // If it was a short tap (not long press and not moved), handle as click
-        if (!touchMoved && !$(this).hasClass('menu-shown')) {
-            // Use existing click handling
-            setTimeout(function() {
-                handleCubeTap(currentRightClickedCube);
-            }, 100);
-        }
-        
-        // Remove menu-shown class after a delay
-        setTimeout(function() {
-            $('.cubes, .cubes-clone').removeClass('menu-shown');
-        }, 500);
-    });
-    
-    // Touch for empty drop container area
-    $(document).on('touchstart', '.drop-container, .drop-box-container', function(e) {
+    // NEW: Touch start event for empty areas (drop container)
+    $(document).on('touchstart', function(e) {
+        // Only handle if not touching cubes or groups
         if (!$(e.target).closest(".cubes, .cubes-clone, .grpCont").length) {
             var touch = e.originalEvent.touches[0];
             touchStartX = touch.clientX;
@@ -2933,13 +3026,15 @@ function initTouchSupport() {
         }
     });
     
-    $(document).on('touchmove', '.drop-container, .drop-box-container', function(e) {
+    // Touch move event - cancel long press if user moves finger
+    $(document).on('touchmove', function(e) {
         if (!touchTimer) return;
         
         var touch = e.originalEvent.touches[0];
         var deltaX = Math.abs(touch.clientX - touchStartX);
         var deltaY = Math.abs(touch.clientY - touchStartY);
         
+        // If moved more than 10px, consider it a drag and cancel long press
         if (deltaX > 10 || deltaY > 10) {
             touchMoved = true;
             clearTimeout(touchTimer);
@@ -2947,30 +3042,52 @@ function initTouchSupport() {
         }
     });
     
-    $(document).on('touchend', '.drop-container, .drop-box-container', function(e) {
+    // Touch end event - cancel long press
+    $(document).on('touchend', function(e) {
         clearTimeout(touchTimer);
         touchTimer = null;
+        
+        // If it was a short tap (not long press and not moved), handle as click
+        if (!touchMoved && currentRightClickedCube && !currentRightClickedCube.hasClass('menu-shown')) {
+            // Use existing click handling for cubes
+            setTimeout(function() {
+                handleCubeTap(currentRightClickedCube);
+            }, 100);
+        }
+        
+        // Remove menu-shown class after a delay
+        setTimeout(function() {
+            $('.cubes, .cubes-clone').removeClass('menu-shown');
+        }, 500);
     });
 }
-// NEW: Show empty area menu for touch devices
-function showEmptyAreaMenuForTouch(x, y) {
+
+// NEW: Show empty area menu for touch devices (updated)
+function showEmptyAreaMenuForTouch(e) {
+    var touch = e.originalEvent.touches[0];
+    var x = touch.clientX;
+    var y = touch.clientY;
+    
     // Position and show menu
     positionCubeMenu(x, y);
     
-    // Show only Paste option when touching empty drop container
+    // Show only Paste option when touching empty area
     $("#cubeMenu button").hide();
     $("#cubeMenu .cube-menu-section").hide();
     $("#cubeMenu hr").hide();
     
     if (copiedCubeData) {
         $("#cubeMenu button[data-action='paste']").show();
-        $("#cubeMenuMessage").hide();
+        $("#cubeMenuMessage").hide(); // Hide message
     } else {
         // If no copied data, show the message
         $("#cubeMenuMessage").text("You have no copy cube").show();
     }
+    
+    e.preventDefault();
 }
-// NEW: Show cube menu for touch devices
+
+// Update the existing showCubeMenuForTouch function to ensure proper menu display
 function showCubeMenuForTouch(e, cube) {
     // Add visual feedback
     cube.addClass('menu-shown');
@@ -2984,30 +3101,12 @@ function showCubeMenuForTouch(e, cube) {
     positionCubeMenu(x, y);
     updateMenuForCube(cube);
     
+    // Make sure the regular menu items are shown (not just paste)
+    $("#cubeMenuMessage").hide();
+    $("#cubeMenu .cube-menu-section").show();
+    $("#cubeMenu hr").show();
+    
     // Prevent default behavior
-    e.preventDefault();
-}
-
-// NEW: Show empty area menu for touch devices
-function showEmptyAreaMenuForTouch(e) {
-    var touch = e.originalEvent.touches[0];
-    var x = touch.clientX;
-    var y = touch.clientY;
-    
-    // Position and show menu
-    positionCubeMenu(x, y);
-    $("#cubeMenu button").hide();
-    $("#cubeMenu .cube-menu-section").hide();
-    $("#cubeMenu hr").hide();
-    // Show only Paste option when touching empty drop container
-    if (copiedCubeData) {
-       $("#cubeMenu button[data-action='paste']").show();
-        $("#cubeMenuMessage").hide();
-    } else {
-        // Show message when no cube is copied
-      $("#cubeMenuMessage").text("You have no copy cube").show();
-    }
-    
     e.preventDefault();
 }
 
