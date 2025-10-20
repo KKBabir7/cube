@@ -374,7 +374,7 @@
                 </div>
               </div>
 
-              <div class="menubar-conatiner" style="gap: 10px">
+              <div class="menubar-conatiner themechanger-mobile" style="gap: 10px">
                 <div id="groupCount" class="clickable">
                   <img
                     style="width: 40px; height: 40px"
@@ -395,6 +395,7 @@
                       <option value="2d">2D Cube</option>
                     </select>
                 </div>
+                 
               </div>
             </div>
             <div class="themechnager-menubar">
@@ -615,4 +616,59 @@ const observer = new MutationObserver(() => {
 observer.observe(containersd, { childList: true, subtree: true });
 
   </script>
+  <script>
+  function moveThemeChanger() {
+    const themeChanger = document.querySelector('.themechnager-menubar');
+    const secondMenuBar = document.querySelector('.secondmenubar');
+    const mobileContainer = document.querySelector('.themechanger-mobile');
+
+    if (!themeChanger || !secondMenuBar || !mobileContainer) return;
+
+    if (window.innerWidth < 768) {
+      // ✅ Move inside .themechanger-mobile
+      if (themeChanger.parentElement !== mobileContainer) {
+        mobileContainer.appendChild(themeChanger);
+      }
+    } else {
+      // ✅ Move outside .secondmenubar
+      if (secondMenuBar.nextElementSibling !== themeChanger) {
+        secondMenuBar.insertAdjacentElement('afterend', themeChanger);
+      }
+    }
+  }
+
+  // Run on page load
+  moveThemeChanger();
+
+  // Run on window resize
+  window.addEventListener('resize', moveThemeChanger);
+</script>
+<script>
+  function moveCubeChanger() {
+    const cubeChanger = document.querySelector('.cubecnager');
+    const secondMenuBar = document.querySelector('.secondmenubar');
+    const themeChangerMobile = document.querySelector('.themechanger-mobile');
+
+    if (!cubeChanger || !secondMenuBar || !themeChangerMobile) return;
+
+    if (window.innerWidth < 768) {
+      // ✅ Move outside (under .secondmenubar)
+      if (secondMenuBar.nextElementSibling !== cubeChanger) {
+        secondMenuBar.insertAdjacentElement('afterend', cubeChanger);
+      }
+    } else {
+      // ✅ Move back inside .themechanger-mobile
+      if (cubeChanger.parentElement !== themeChangerMobile) {
+        themeChangerMobile.appendChild(cubeChanger);
+      }
+    }
+  }
+
+  // Run on page load
+  moveCubeChanger();
+
+  // Run on window resize
+  window.addEventListener('resize', moveCubeChanger);
+</script>
+
 </html>

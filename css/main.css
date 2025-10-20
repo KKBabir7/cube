@@ -556,7 +556,7 @@ body {
 /* Toggle button active state */
 #groupCount.active {
   opacity: 1 !important;
-  background: #007bff !important;
+  background: #1c8fc7 !important;
   color: white !important;
 }
 
@@ -850,6 +850,7 @@ body {
   margin-top: 10px;
 }
 
+
 @media only screen and (max-width: 768px) {
 body{
   cursor: auto;
@@ -929,7 +930,7 @@ body{
 
  {
     height: 25px !important;
-    width: 25px !important;
+    width: 35px !important;
 }
 .cubecnager .select2-container--default .select2-selection--single {
    
@@ -937,10 +938,47 @@ body{
    
 }
 .cubecnager .select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 7px;
-    font-size: 7px;
-           height: 19px;
-        padding-top: 7px;
+           line-height: 7px;
+        font-size: 9px;
+        height: 19px;
+        padding-top: 6px;
+        padding-left: 2px;
+        /* position-area: right; */
+        padding-right: 2px;
+}
+.themechanger-mobile .select2-container .select2-selection--single{
+          height: 25px;
+        width: 25px;
+        border-radius: 5px !important;
+}
+.themechanger-mobile .select2-container--default .select2-selection--single .select2-selection__arrow{
+  display: none;
+}
+.themechanger-mobile  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    
+    line-height: 26px;
+}
+
+.themechanger-mobile  .select2-container .select2-selection--single .select2-selection__rendered {
+           line-height: 7px;
+        font-size: 10px;
+        height: 19px;
+        padding-top: 10px;
+        padding-left: 2px;
+        
+        padding-right: 3px;
+        color: #fff;
+}
+.themechanger-mobile  .select2-container--default .select2-selection--single
+
+ {
+  border: none !important;
+  opacity: 0.6;
+    background: #1c8fc7 !important;
+   
+ }
+.cubecnager .select2-container--default .select2-selection--single:hover{
+opacity: 1;
 }
 
 .tool-container{
@@ -974,13 +1012,29 @@ body{
             padding-bottom: 50px;
   }
   #select2-themeSelect-results{
-           width: 113px !important;
-        margin-left: -68px;
+        width: 117px !important;
+        margin-left: -74px;
         background: #fff;
   }
+  #select2-themeSelect-results::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+#select2-themeSelect-results::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+#select2-themeSelect-results::-webkit-scrollbar-thumb {
+  background: #314D63;
+}
+
+
 .themechnager-menubar h3
 
  {
+  display: none;
     margin-top: 9px;
     font-size: 10px;
 }
@@ -992,7 +1046,7 @@ body{
   }
 .theme-option {
     padding: 2px 0;
-    font-size: 10px;
+    font-size: 11px;
             white-space: nowrap;
 }
 .theme-option img {
@@ -1009,7 +1063,7 @@ body{
  {
    
     padding:3px;
-    font-size: 10px;
+    font-size: 11px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
