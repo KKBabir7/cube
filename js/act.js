@@ -1,4 +1,6 @@
-
+var isDrawing = false;
+        var pencilActive = false;
+        var eraserActive = false;
 
 $(document).ready(function () {
   var isDropOnToolBox = false;
@@ -41,8 +43,11 @@ var maxUndoreSteps = 150;
 var isGroupCountActive = false;
 var groupCountDisplays = new Map(); // Store count displays by group ID
 
+
+
+
   $("#undo").addClass("disabled");
-  $("#pencil").css({ opacity: "0.6" });
+
   $("#eraser").css({ opacity: "0.6" });
   var isDraggable = false;
   var connectorHt = $(".connector").outerHeight();
@@ -1221,7 +1226,7 @@ setTimeout(function() {
             isSelectedTool = "eraser";
             $(this).removeClass("enabled");
             $(this).addClass("disabled");
-            $("#canvas-area").css({ "pointer-events": "none" });
+            $("#").css({ "pointer-events": "none" });
             $("body").addClass("addcursor");
             $("body").removeClass("addcursorPencil");
             $(this).css({ opacity: 1 });
@@ -1229,7 +1234,7 @@ setTimeout(function() {
             showHideSeparateRotateToolInGrp(false);
           } else {
             isSelectedTool = "";
-            $("#canvas-area").css({ "pointer-events": "auto" });
+            $("#").css({ "pointer-events": "auto" });
             $(".cubes-clone").off("hover");
             $(this).addClass("enabled");
             $(this).removeClass("disabled");
@@ -1241,31 +1246,7 @@ setTimeout(function() {
           }
         }
         // dsfsf
-         else if ($(this).attr("id") == "pencil") {
-          $("body").removeAttr("style");
-          $("body").removeAttr("class");
-          if (isSelectedTool != "pencil") {
-            isSelectedTool = "pencil";
-            $(this).removeClass("enabled");
-            $(this).addClass("disabled");
-            $(this).css({ opacity: 1 });
-            $("#eraser").css({ opacity: 0.6 });
-            $("#canvas-area").css({ "pointer-events": "auto" });
-            $("body").addClass("addcursorPencil");
-            showHideSeparateRotateToolInGrp(false);
-          }
-           else {
-            isSelectedTool = "";
-            $(this).css({ opacity: 0.6 });
-            $(".cubes-clone").off("hover");
-            $(this).addClass("enabled");
-            $(this).removeClass("disabled");
-            $("body").removeClass("addcursorPencil");
-            showHideSeparateRotateToolInGrp(true);
-            $("#canvas-area").css({ "pointer-events": "none" });
-             resetTools();
-          }
-        }
+  
         
         
         else if ($(this).attr("id") == "undo") {
@@ -2812,7 +2793,7 @@ $("#grp" + grpCounter + " #rotategrp3").css({ top: groupHeight + "px" });
     // console.log("selected tool ", isSelectedTool);
 
     if (isSelectedTool == "") {
-      $("#canvas-area").css({ "pointer-events": "none" });
+      $("#").css({ "pointer-events": "none" });
       $(".tempItem").css({ "pointer-events": "none" });
       $("body").removeAttr("style");
       $("body").removeAttr("class");
@@ -2822,17 +2803,15 @@ $("#grp" + grpCounter + " #rotategrp3").css({ top: groupHeight + "px" });
     }
 
     if (isSelectedTool == "eraser") {
-      $("#canvas-area").css({ "pointer-events": "none" });
-    } else if (isSelectedTool == "pencil") {
-      $("#canvas-area").css({ "pointer-events": "auto" });
-    }
+      $("#").css({ "pointer-events": "none" });
+    } 
   });
 
   document.addEventListener("touchmove", function () {
     console.log("selectedTool ", isSelectedTool);
 
     if (isSelectedTool == "") {
-      $("#canvas-area").css({ "pointer-events": "none" });
+      $("#").css({ "pointer-events": "none" });
       $(".tempItem").css({ "pointer-events": "none" });
       $("body").removeAttr("style");
       $("body").removeAttr("class");
@@ -2842,10 +2821,8 @@ $("#grp" + grpCounter + " #rotategrp3").css({ top: groupHeight + "px" });
     }
 
     if (isSelectedTool == "eraser") {
-      $("#canvas-area").css({ "pointer-events": "none" });
-    } else if (isSelectedTool == "pencil") {
-      $("#canvas-area").css({ "pointer-events": "auto" });
-    }
+      $("#").css({ "pointer-events": "none" });
+    } 
   });
 
 // dddffdddd
@@ -2991,100 +2968,7 @@ function handleCubeTap(cube) {
     // This should match what you have in the click handler
 }
 
-// gropupeeednewearager
-// Update the eraser functionality to follow cursor
-function initEraserFollow() {
-    const eraser = $("#eraser");
-    const ghost = document.getElementById("cursor-ghost");
-    
-    let isEraserActive = false;
-    
-    // When eraser is clicked
-    eraser.off("click").on("click", function() {
-        $("body").removeAttr("style");
-        $("body").removeAttr("class");
 
-        if (isSelectedTool != "eraser") {
-            console.log("eraser selected");
-            isSelectedTool = "eraser";
-            isEraserActive = true;
-            
-            $(this).removeClass("enabled");
-            $(this).addClass("disabled");
-            $("#canvas-area").css({ "pointer-events": "none" });
-            $("body").addClass("addcursor");
-            $("body").removeClass("addcursorPencil");
-            $(this).css({ opacity: 1 });
-            $("#pencil").css({ opacity: 0.6 });
-            showHideSeparateRotateToolInGrp(false);
-            
-            // Show and set eraser ghost cursor
-            if (ghost) {
-                ghost.src = "assets/images/eraser.png";
-                ghost.style.transform = "translate(-16px, -16px)";
-                ghost.style.display = "block";
-                document.body.classList.add("hide-native-cursor");
-            }
-        } else {
-            isSelectedTool = "";
-            isEraserActive = false;
-            $("#canvas-area").css({ "pointer-events": "auto" });
-            $(".cubes-clone").off("hover");
-            $(this).addClass("enabled");
-            $(this).removeClass("disabled");
-            $("body").removeClass("addcursor");
-            $("body").removeClass("addcursorPencil");
-            showHideSeparateRotateToolInGrp(true);
-            $(this).css({ opacity: 0.6 });
-            
-            // Hide ghost cursor
-            if (ghost) {
-                ghost.style.display = "none";
-                document.body.classList.remove("hide-native-cursor");
-            }
-            resetTools();
-        }
-    });
-
-    // Make eraser follow mouse/touch movement
-    $(document).on("mousemove touchmove", function(e) {
-        if (!isEraserActive || !ghost) return;
-        
-        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-        
-        if (clientX && clientY) {
-            ghost.style.left = clientX + "px";
-            ghost.style.top = clientY + "px";
-        }
-    });
-
-    // Hide ghost cursor when not over the stage
-    const stage = document.querySelector(".drop-box-container") || document.body;
-    
-    function updateGhostVisibility(e) {
-        if (!isEraserActive || !ghost) return;
-        
-        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-        
-        if (clientX && clientY) {
-            const rect = stage.getBoundingClientRect();
-            const isInStage = 
-                clientX >= rect.left && 
-                clientX <= rect.right && 
-                clientY >= rect.top && 
-                clientY <= rect.bottom;
-            
-            ghost.style.display = isInStage ? "block" : "none";
-        }
-    }
-    
-    $(document).on("mousemove touchmove", updateGhostVisibility);
-}
-
-// Initialize the eraser follow functionality
-initEraserFollow();
 // NEW: Toggle group count display
 function toggleGroupCountDisplay() {
     isGroupCountActive = !isGroupCountActive;
@@ -3773,15 +3657,28 @@ $(".cube-container-block").on("click", function(e) {
         resetTools();
     }
 });
+
+
+eragerPencile()
+
+
 function resetTools() {
     isSelectedTool = "";
+    isDrawing = false;
+        pencilActive = false;
+        eraserActive = false;
+    $("#draw").css('pointer-events','none')
     $("#pencil").css({ opacity: "0.6" });
     $("#eraser").css({ opacity: "0.6" });
     $("#pencil").removeClass("disabled").addClass("enabled");
     $("#eraser").removeClass("disabled").addClass("enabled");
+    $("#pencilPanel").addClass('hide')
+    $("#pencilTool").removeClass("active")
+     $("#eraserPanel").addClass('hide')
+    $("#eraserTool").removeClass("active")
     $("body").removeClass("addcursor");
     $("body").removeClass("addcursorPencil");
-    $("#canvas-area").css({ "pointer-events": "none" });
+    $("#").css({ "pointer-events": "none" });
     showHideSeparateRotateToolInGrp(true);
       const ghost = document.getElementById("cursor-ghost");
     if (ghost) {
@@ -3801,6 +3698,11 @@ function resetTools() {
     
 }
 
+
+
+
+
+
 setTimeout(function() {
     undoreSaveState(); // Save initial empty statedddfdfd
 }, 100);
@@ -3811,7 +3713,282 @@ setTimeout(function() {
 
 });
 
-
+function eragerPencile(){
+        // Canvas setup
+        const canvas = document.getElementById('draw');
+        const ctx = canvas.getContext('2d');
+        
+        // Tool elements
+        const pencilTool = document.getElementById('pencilTool');
+        const eraserTool = document.getElementById('eraserTool');
+        
+        // Panel elements
+        const pencilPanel = document.getElementById('pencilPanel');
+        const eraserPanel = document.getElementById('eraserPanel');
+        const closePencilPanel = document.getElementById('closePencilPanel');
+        const closeEraserPanel = document.getElementById('closeEraserPanel');
+        
+        // Pencil controls
+        const pencilBrushSize = document.getElementById('pencilBrushSize');
+        const pencilBrushOpacity = document.getElementById('pencilBrushOpacity');
+        const pencilBrushSizePreview = document.getElementById('pencilBrushSizePreview');
+        const pencilColorPicker = document.getElementById('pencilColorPicker');
+        const pencilColorPreview = document.getElementById('pencilColorPreview');
+        
+        // Eraser controls
+        const eraserBrushSize = document.getElementById('eraserBrushSize');
+        const eraserBrushSizePreview = document.getElementById('eraserBrushSizePreview');
+        
+        // Drawing state
+        
+        let lastX = 0;
+        let lastY = 0;
+        
+        
+        // Tool settings
+        let pencilSettings = {
+            size: parseInt(pencilBrushSize.value),
+            opacity: parseFloat(pencilBrushOpacity.value),
+            color: pencilColorPicker.value
+        };
+        
+        let eraserSettings = {
+            size: parseInt(eraserBrushSize.value)
+        };
+        
+        // Initialize canvas
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            
+            // Set initial brush previews
+            updatePencilBrushPreview();
+            updateEraserBrushPreview();
+            updateColorPreview();
+        }
+        
+        // Update pencil brush preview
+        function updatePencilBrushPreview() {
+            pencilBrushSizePreview.style.width = `${pencilSettings.size}px`;
+            pencilBrushSizePreview.style.height = `${pencilSettings.size}px`;
+            pencilBrushSizePreview.style.backgroundColor = pencilSettings.color;
+            pencilBrushSizePreview.style.opacity = pencilSettings.opacity;
+        }
+        
+        // Update eraser brush preview
+        function updateEraserBrushPreview() {
+            eraserBrushSizePreview.style.width = `${eraserSettings.size}px`;
+            eraserBrushSizePreview.style.height = `${eraserSettings.size}px`;
+            eraserBrushSizePreview.style.backgroundColor = '#ffffff';
+        }
+        
+        // Update color preview
+        function updateColorPreview() {
+            pencilColorPreview.style.backgroundColor = pencilSettings.color;
+        }
+        
+        // Position panel above tool
+        function positionPanel(panel, tool) {
+            const toolRect = tool.getBoundingClientRect();
+            const panelRect = panel.getBoundingClientRect();
+            
+            panel.style.top = `${toolRect.top - panelRect.height - 10}px`;
+            panel.style.left = `${toolRect.left}px`;
+        }
+        
+        // Toggle pencil tool
+        function togglePencil() {
+            if (pencilActive) {
+                // Deactivate pencil
+                pencilActive = false;
+                pencilTool.classList.remove('active');
+                canvas.style.cursor = 'default';
+                pencilPanel.classList.add('hide');
+                document.querySelector("#draw").style.pointerEvents = "none";
+            } else {
+                // Activate pencil
+                pencilActive = true;
+                pencilTool.classList.add('active');
+                canvas.style.cursor = 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="black" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>\') 0 24, auto';
+                document.querySelector("#draw").style.pointerEvents = "auto";
+                // Deactivate eraser if active
+                if (eraserActive) {
+                    eraserActive = false;
+                    eraserTool.classList.remove('active');
+                    eraserPanel.classList.add('hide');
+                   
+                }
+                
+                // Show pencil panel
+                positionPanel(pencilPanel, pencilTool);
+                pencilPanel.classList.remove('hide');
+            }
+        }
+        
+        // Toggle eraser tool
+        function toggleEraser() {
+            if (eraserActive) {
+                // Deactivate eraser
+                eraserActive = false;
+                eraserTool.classList.remove('active');
+                canvas.style.cursor = 'default';
+                eraserPanel.classList.add('hide');
+                 document.querySelector("#draw").style.pointerEvents = "none";
+            } else {
+                // Activate eraser
+                eraserActive = true;
+                eraserTool.classList.add('active');
+                canvas.style.cursor = 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="black" d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0 1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.83-10.88c.79-.78 2.05-.78 2.83 0L16.24 3.56zM4.22 15.58l3.54 3.53c.39.39 1.02.39 1.41 0l3.53-3.53-4.95-4.95-3.53 3.95z"/></svg>\') 12 12, auto';
+                 document.querySelector("#draw").style.pointerEvents = "auto";
+                // Deactivate pencil if active
+                if (pencilActive) {
+                    pencilActive = false;
+                    pencilTool.classList.remove('active');
+                    pencilPanel.classList.add('hide');
+                }
+                
+                // Show eraser panel
+                positionPanel(eraserPanel, eraserTool);
+                eraserPanel.classList.remove('hide');
+            }
+        }
+       
+        // Start drawing
+        function startDrawing(e) {
+            if (!pencilActive && !eraserActive) return;
+            
+            isDrawing = true;
+            [lastX, lastY] = getCoordinates(e);
+            
+            // For pencil, start a new path
+            if (pencilActive) {
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineWidth = pencilSettings.size;
+                ctx.globalAlpha = pencilSettings.opacity;
+                ctx.strokeStyle = pencilSettings.color;
+                ctx.globalCompositeOperation = 'source-over';
+            } else if (eraserActive) {
+                ctx.lineWidth = eraserSettings.size;
+                ctx.globalCompositeOperation = 'destination-out';
+            }
+        }
+        
+        // Draw
+        function draw(e) {
+            if (!isDrawing || (!pencilActive && !eraserActive)) return;
+            
+            const [x, y] = getCoordinates(e);
+            
+            if (pencilActive) {
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            } else if (eraserActive) {
+                ctx.beginPath();
+                ctx.arc(x, y, eraserSettings.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            [lastX, lastY] = [x, y];
+        }
+        
+        // Stop drawing
+        function stopDrawing() {
+            isDrawing = false;
+            
+            if (pencilActive) {
+                ctx.closePath();
+            }
+        }
+        
+        // Get coordinates from event (mouse or touch)
+        function getCoordinates(e) {
+            let clientX, clientY;
+            
+            if (e.type.includes('touch')) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            
+            return [x, y];
+        }
+        
+        // Event listeners for tools
+        pencilTool.addEventListener('click', togglePencil);
+        eraserTool.addEventListener('click', toggleEraser);
+        
+        // Close panel buttons
+        closePencilPanel.addEventListener('click', () => {
+            pencilPanel.classList.add('hide');
+            // pencilActive = false;
+            // pencilTool.classList.remove('active');
+            // canvas.style.cursor = 'default';
+        });
+        
+        closeEraserPanel.addEventListener('click', () => {
+            eraserPanel.classList.add('hide');
+            // eraserActive = false;
+            // eraserTool.classList.remove('active');
+            // canvas.style.cursor = 'default';
+        });
+        
+        // Update pencil settings
+        pencilBrushSize.addEventListener('input', (e) => {
+            pencilSettings.size = parseInt(e.target.value);
+            updatePencilBrushPreview();
+        });
+        
+        pencilBrushOpacity.addEventListener('input', (e) => {
+            pencilSettings.opacity = parseFloat(e.target.value);
+            updatePencilBrushPreview();
+        });
+        
+        pencilColorPicker.addEventListener('input', (e) => {
+            pencilSettings.color = e.target.value;
+            updatePencilBrushPreview();
+            updateColorPreview();
+        });
+        
+        // Update eraser settings
+        eraserBrushSize.addEventListener('input', (e) => {
+            eraserSettings.size = parseInt(e.target.value);
+            updateEraserBrushPreview();
+        });
+        
+        // Mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        // Touch events for mobile support
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrawing(e);
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            draw(e);
+        });
+        
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            stopDrawing();
+        });
+        
+        // Initialize the canvas
+        initCanvas();
+}
 // NEW: Screenshot functionality
 function initScreenshotFunctionality() {
     $("#screenshot").on("click", function() {

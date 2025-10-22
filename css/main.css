@@ -150,7 +150,7 @@ body {
 
 .hasGroup,
 .grpCont {
-  z-index: 9;
+ 
   transform-style: preserve-3d;
   backface-visibility: hidden;
 }
@@ -374,6 +374,7 @@ body {
   font-weight: 600;
 }
 #eraser {
+  cursor: auto  !important;
   width: 25px;
   height: 25px;
   display: inline-block;
@@ -1134,9 +1135,10 @@ opacity: 1;
         }
 
         #draw {
-            z-index: 1;
+            z-index: 10;
            width: 100vw;
-    height: 100vh;
+           height: 100vh;
+         pointer-events: none;
             background-color: transparent;
           
         }
@@ -1228,6 +1230,7 @@ opacity: 1;
             flex-direction: column;
             gap: 10px;
             min-width: 200px;
+            top: 200px !important;
         }
 
         .control-panel label {
