@@ -923,6 +923,7 @@ body {
 
 
 @media only screen and (max-width: 768px) {
+  
 body{
   cursor: auto;
 }
@@ -952,14 +953,16 @@ body{
   }
 
 #pencil,#eraser,#undo{
-    width: 25px;
-    height: 25px;
+            width: 20px;
+        height: 21px;
     padding: 2px;
-    border: 1px solid #cecbcb00;
-    border-radius: 12px;
+   
+    border-radius:4px;
 }
-#eraser img {
-    width: 25px !important;
+
+#eraser img ,#undo img{
+    width: 15px !important;
+    height: 15px !important;
 }
 #undore, #redore {
     width: 25px;
@@ -1037,7 +1040,7 @@ opacity: 1;
 
 .tool-container{
   width: 48px;
-
+    height: calc(100vh - 40px);
   
      
 }
@@ -1326,4 +1329,30 @@ opacity: 1;
     border-radius: 5px;
     margin: 0 auto;
     transition: opacity 0.2s;
+}
+
+@media only screen and (max-width: 768px) {
+  .eraser,.pencil{
+    background-size: 15px !important;
+}
+#eraser, .tool.pencil, .tool.eraser {
+    width: 25px;
+    height: 25px;
+    
+    z-index: 9999;
+    padding: 0px;
+   
+    border-radius: 4px;
+            display: flex
+;
+        align-items: center;
+        justify-content: center;
+}
+.toolbar{
+  gap: 5px;
+}
+.secondmenubar{
+  height: 40px;
+}
+
 }
