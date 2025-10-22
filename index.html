@@ -19,8 +19,11 @@
     <link rel="stylesheet" type="text/css" href="css/croquispop.css" />
 
     <link rel="stylesheet" type="text/css" href="css/main.css" />
-   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-   <script type="text/javascript" src="js/loader.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <script type="text/javascript" src="js/loader.js"></script>
     <script type="text/javascript" src="js/libs/jquery-1.10.2-min.js"></script>
     <script type="text/javascript" src="js/libs/jquery-ui.min.js"></script>
     <script
@@ -29,7 +32,7 @@
     ></script>
 
     <script type="text/javascript" src="js/libs/hittest.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
       /* floating cursor image */
       #cursor-ghost {
@@ -49,56 +52,20 @@
         cursor: none !important;
       }
     </style>
-
   </head>
   <!-- cube action menu -->
 
   <body>
     <!-- <div id="canvas-area"></div> -->
-       <div class="canvas-container">
-        <canvas id="draw"></canvas>
-        
-        <div class="toolbar">
-            <div class="tool pencil" data-tool-tip="Pencil Tool" id="pencilTool"></div>
-            <div class="tool eraser" data-tool-tip="Eraser Tool" id="eraserTool"></div>
-        </div>
-        
-        <!-- Pencil Control Panel -->
-        <div class="control-panel hide" id="pencilPanel">
-            <div class="panel-header">
-                <div class="panel-title">Pencil Settings</div>
-                <div class="close-btn" id="closePencilPanel">✕</div>
-            </div>
-            <label for="pencilBrushSize">Brush Size</label>
-            <input type="range" class="brushSize" id="pencilBrushSize" value="5" min="1" max="50">
-            <div class="brush-size-preview" id="pencilBrushSizePreview"></div>
-            
-            <label for="pencilBrushOpacity">Opacity</label>
-            <input type="range" class="brushOpacity" id="pencilBrushOpacity" value="1" min="0.1" max="1" step="0.1">
-            
-            <div class="color-selector">
-                <label for="pencilColorPicker">Color</label>
-                <input type="color" id="pencilColorPicker" value="#e53935">
-                <div class="color-preview" id="pencilColorPreview"></div>
-            </div>
-        </div>
-        
-        <!-- Eraser Control Panel -->
-        <div class="control-panel hide" id="eraserPanel">
-            <div class="panel-header">
-                <div class="panel-title">Eraser Settings</div>
-                <div class="close-btn" id="closeEraserPanel">✕</div>
-            </div>
-            <label for="eraserBrushSize">Brush Size</label>
-            <input type="range" class="brushSize" id="eraserBrushSize" value="10" min="1" max="50">
-            <div class="brush-size-preview" id="eraserBrushSizePreview"></div>
-        </div>
-       </div>
-   
+    <div class="canvas-container">
+      <canvas id="draw"></canvas>
+
+
+    </div>
 
     <div acc-id="main-container" class="main-container-block">
       <div acc-id="act-container">
-        <div class="tool-container tool-container-theme ui-droppable" >
+        <div class="tool-container tool-container-theme ui-droppable">
           <div class="tool-grp">
             <div class="cube-container-block">
               <div
@@ -330,22 +297,85 @@
               </div>
             </div>
             <div class="secondmenubar">
+             
               <div class="menubar-conatiner">
-                <div class="pencile-block">
-                  <label>Drawing</label>
-                  <div id="pencil" class="clickable" style="opacity: 0.6">
-                    <img
-                      style="width: 100%; height: 100%"
-                      src="assets/images/pencil.png"
-                    />
+                 <div class="">
+                 <div class="toolbar">
+                    <div
+                      class="tool pencil"
+                      data-tool-tip="Pencil Tool"
+                      id="pencilTool"
+                    ></div>
+                    <div
+                      class="tool eraser"
+                      data-tool-tip="Eraser Tool"
+                      id="eraserTool"
+                    ></div>
                   </div>
-                </div>
+
+      <!-- Pencil Control Panel -->
+                  <div class="control-panel hide" id="pencilPanel">
+                    <div class="panel-header">
+                      <div class="panel-title">Pencil Settings</div>
+                      <div class="close-btn" id="closePencilPanel">✕</div>
+                    </div>
+                    <label for="pencilBrushSize">Brush Size</label>
+                    <input
+                      type="range"
+                      class="brushSize"
+                      id="pencilBrushSize"
+                      value="5"
+                      min="1"
+                      max="50"
+                    />
+                    <div class="brush-size-preview" id="pencilBrushSizePreview"></div>
+
+                    <label for="pencilBrushOpacity">Opacity</label>
+                    <input
+                      type="range"
+                      class="brushOpacity"
+                      id="pencilBrushOpacity"
+                      value="1"
+                      min="0.1"
+                      max="1"
+                      step="0.1"
+                    />
+
+                    <div class="color-selector">
+                      <label for="pencilColorPicker">Color</label>
+                      <input type="color" id="pencilColorPicker" value="#e53935" />
+                      <div class="color-preview" id="pencilColorPreview"></div>
+                    </div>
+                  </div>
+
+    <!-- Eraser Control Panel -->
+                  <div class="control-panel hide" id="eraserPanel">
+                    <div class="panel-header">
+                      <div class="panel-title">Eraser Settings</div>
+                      <div class="close-btn" id="closeEraserPanel">✕</div>
+                    </div>
+                    <label for="eraserBrushSize">Brush Size</label>
+                    <input
+                      type="range"
+                      class="brushSize"
+                      id="eraserBrushSize"
+                      value="10"
+                      min="1"
+                      max="50"
+                    />
+                    <div class="brush-size-preview" id="eraserBrushSizePreview"></div>
+<div class="brush-opacity-preview" id="eraserBrushOpacityPreview"></div>
+                    <label for="eraserBrushOpacity">Opacity</label>
+<input type="range" class="brushOpacity" id="eraserBrushOpacity" value="1" min="0.1" max="1" step="0.1">
+                  </div>
+              </div>
+                
                 <div class="eraser-Block">
                   <label>Eraser</label>
                   <div id="eraser" class="clickable" style="opacity: 0.6">
                     <img
                       style="width: 100%; height: 100%"
-                      src="assets/images/eraser.png"
+                      src="assets/images/deleteCube.png"
                     />
                   </div>
                 </div>
@@ -360,7 +390,7 @@
                 </div>
               </div>
 
-              <div class="menubar-conatiner" style="gap: 10px">
+              <div class="menubar-conatiner" >
                 <div id="undore" class="clickable disabled" title="Undo">
                   <img
                     style="width: 35px; height: 35px"
@@ -375,7 +405,10 @@
                 </div>
               </div>
 
-              <div class="menubar-conatiner themechanger-mobile" style="gap: 10px">
+              <div
+                class="menubar-conatiner themechanger-mobile"
+               
+              >
                 <div id="groupCount" class="clickable">
                   <img
                     style="width: 40px; height: 40px"
@@ -388,37 +421,42 @@
                     src="assets/images/screenshot.png"
                   />
                 </div>
-                <div class="cubecnager">
-                   
-                    <select id="cubeTypeSelector">
-                      <option value="kids" selected>Kids Cube</option>
-                      <option value="raw">Raw Cube</option>
-                      <option value="2d">2D Cube</option>
-                    </select>
-                </div>
-                 
+                
+                 <div class="themechnager-menubar">
+              <h3>
+                <img
+                  style="width: 18px; margin: -4px; margin-left: 0px"
+                  src="assets/images/cubeicon/paint.png"
+                />&nbsp; Select Theme
+              </h3>
+              <select id="themeSelect" class="themeSelect">
+                <optgroup label="🖼️ Image Themes">
+                  <option value="hill">Hill</option>
+                  <option value="candy">Candy</option>
+                  <option value="sky">Sky</option>
+                  <option value="playground">Playground</option>
+                  <option value="water">Water</option>
+                </optgroup>
+                <optgroup label="🎬 Video Themes">
+                  <option value="car">Car Play</option>
+                  <option value="space">Space</option>
+                </optgroup>
+                <optgroup label="🎨 Default Themes">
+                  <option value="white">White</option>
+                  <option value="black">Black</option>
+                </optgroup>
+              </select>
+                 </div>
               </div>
+              
             </div>
-            <div class="themechnager-menubar">
-                <h3><img style="width: 18px;margin: -4px;margin-left: 0px;" src="assets/images/cubeicon/paint.png" />&nbsp; Select Theme</h3>
-                <select id="themeSelect" class="themeSelect">
-                  <optgroup label="🖼️ Image Themes">
-                    <option value="hill">Hill</option>
-                    <option value="candy">Candy</option>
-                    <option value="sky">Sky</option>
-                    <option value="playground">Playground</option>
-                    <option value="water">Water</option>
-                  </optgroup>
-                  <optgroup label="🎬 Video Themes">
-                    <option value="car">Car Play</option>
-                    <option value="space">Space</option>
-                  </optgroup>
-                  <optgroup label="🎨 Default Themes">
-                    <option value="white">White</option>
-                    <option value="black">Black</option>
-                  </optgroup>
-                </select>
-            </div>
+              <div class="cubecnager">
+                  <select id="cubeTypeSelector">
+                    <option value="kids" selected>Kids Cube</option>
+                    <option value="raw">Raw Cube</option>
+                    <option value="2d">2D Cube</option>
+                  </select>
+              </div>
           </div>
         </div>
 
@@ -435,22 +473,42 @@
         style="display: none"
       ></div>
       <div class="cube-menu-section">Cube Actions</div>
-      <button data-action="lock"><img src="assets/images/cubeicon/padlock.png" /> Lock Cube</button>
-      <button data-action="unlock" style="display: none"><img src="assets/images/cubeicon/tools.png" /> Unlock Cube</button>
+      <button data-action="lock">
+        <img src="assets/images/cubeicon/padlock.png" /> Lock Cube
+      </button>
+      <button data-action="unlock" style="display: none">
+        <img src="assets/images/cubeicon/tools.png" /> Unlock Cube
+      </button>
       <hr />
-      <button data-action="duplicate"><img src="assets/images/cubeicon/duplicate.png" /> Duplicate Cube</button>
-      <button data-action="rotate"><img src="assets/images/cubeicon/loop-arrow.png" /> Rotate Cube</button>
-      <button data-action="changeColor"><img src="assets/images/cubeicon/change-management.png" /> Change Cube</button>
+      <button data-action="duplicate">
+        <img src="assets/images/cubeicon/duplicate.png" /> Duplicate Cube
+      </button>
+      <button data-action="rotate">
+        <img src="assets/images/cubeicon/loop-arrow.png" /> Rotate Cube
+      </button>
+      <button data-action="changeColor">
+        <img src="assets/images/cubeicon/change-management.png" /> Change Cube
+      </button>
       <hr />
-      <button data-action="download"><img src="assets/images/cubeicon/download.png" /> Download as PNG</button>
-      <button data-action="copy"><img src="assets/images/cubeicon/copy.png" /> Copy Cube</button>
-      <button data-action="paste" style="display: none"><img src="assets/images/cubeicon/paste.png" /> Paste Cube</button>
+      <button data-action="download">
+        <img src="assets/images/cubeicon/download.png" /> Download as PNG
+      </button>
+      <button data-action="copy">
+        <img src="assets/images/cubeicon/copy.png" /> Copy Cube
+      </button>
+      <button data-action="paste" style="display: none">
+        <img src="assets/images/cubeicon/paste.png" /> Paste Cube
+      </button>
       <hr />
-      <button data-action="delete"><img src="assets/images/cubeicon/laundry-basket.png" /> Delete Cube</button>
+      <button data-action="delete">
+        <img src="assets/images/cubeicon/laundry-basket.png" /> Delete Cube
+      </button>
       <button data-action="deleteGroup" style="display: none">
         <img src="assets/images/cubeicon/delete.png" /> Delete Group
       </button>
-      <button data-action="properties"><img src="assets/images/cubeicon/properties.png" /> Cube Properties</button>
+      <button data-action="properties">
+        <img src="assets/images/cubeicon/properties.png" /> Cube Properties
+      </button>
     </div>
     <div id="colorPicker" class="color-picker-popup" style="display: none">
       <div style="margin-bottom: 8px">Select a color:</div>
@@ -499,7 +557,22 @@
         </div>
       </div>
     </div>
-    <video id="videoBackground" autoplay muted loop style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: fill; z-index: -2; display: none;"></video>
+    <video
+      id="videoBackground"
+      autoplay
+      muted
+      loop
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        z-index: -2;
+        display: none;
+      "
+    ></video>
   </body>
 
   <script type="text/javascript" src="js/act.js"></script>
@@ -510,7 +583,7 @@
   <script src="js/croquis/croquis.js"></script>
   <script src="js/croquispop.js"></script>
   <script src="js/theme.js"></script>
-   <script src="js/cube.js"></script>
+  <script src="js/cube.js"></script>
 
   <!-- <script>
     (function () {
@@ -594,28 +667,29 @@
   </script> -->
 
   <script>
+    const containersd = document.body; // or the parent of tempItem
 
-const containersd = document.body; // or the parent of tempItem
+    const observer = new MutationObserver(() => {
+      const blackBlock = document.querySelector(".main-container-block-black");
 
-const observer = new MutationObserver(() => {
-  const blackBlock = document.querySelector('.main-container-block-black');
+      document.querySelectorAll(".tempItem img").forEach((img) => {
+        if (blackBlock) {
+          // Invert if tempItem comes BEFORE blackBlock
+          if (
+            img.closest(".tempItem").compareDocumentPosition(blackBlock) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+          ) {
+            img.style.filter = "invert(1)";
+          }
+        } else {
+          // Remove invert when blackBlock is gone
+          img.style.filter = "";
+        }
+      });
+    });
 
-  document.querySelectorAll('.tempItem img').forEach(img => {
-    if (blackBlock) {
-      // Invert if tempItem comes BEFORE blackBlock
-      if (img.closest('.tempItem').compareDocumentPosition(blackBlock) & Node.DOCUMENT_POSITION_FOLLOWING) {
-        img.style.filter = 'invert(1)';
-      }
-    } else {
-      // Remove invert when blackBlock is gone
-      img.style.filter = '';
-    }
-  });
-});
-
-// Start observing DOM changes
-observer.observe(containersd, { childList: true, subtree: true });
-
+    // Start observing DOM changes
+    observer.observe(containersd, { childList: true, subtree: true });
   </script>
   <!-- <script>
   function moveThemeChanger() {
@@ -644,7 +718,7 @@ observer.observe(containersd, { childList: true, subtree: true });
   // Run on window resize
   window.addEventListener('resize', moveThemeChanger);
 </script> -->
-<!-- <script>
+  <!-- <script>
   function moveCubeChanger() {
     const cubeChanger = document.querySelector('.cubecnager');
     const secondMenuBar = document.querySelector('.secondmenubar');
@@ -671,5 +745,4 @@ observer.observe(containersd, { childList: true, subtree: true });
   // Run on window resize
   window.addEventListener('resize', moveCubeChanger);
 </script> -->
-
 </html>

@@ -3738,7 +3738,8 @@ function eragerPencile(){
         // Eraser controls
         const eraserBrushSize = document.getElementById('eraserBrushSize');
         const eraserBrushSizePreview = document.getElementById('eraserBrushSizePreview');
-        
+        const eraserBrushOpacity = document.getElementById('eraserBrushOpacity');
+const eraserBrushOpacityPreview = document.getElementById('eraserBrushOpacityPreview');
         // Drawing state
         
         let lastX = 0;
@@ -3753,7 +3754,8 @@ function eragerPencile(){
         };
         
         let eraserSettings = {
-            size: parseInt(eraserBrushSize.value)
+            size: parseInt(eraserBrushSize.value),
+            opacity: parseFloat(eraserBrushOpacity.value)
         };
         
         // Initialize canvas
@@ -3782,13 +3784,16 @@ function eragerPencile(){
             eraserBrushSizePreview.style.width = `${eraserSettings.size}px`;
             eraserBrushSizePreview.style.height = `${eraserSettings.size}px`;
             eraserBrushSizePreview.style.backgroundColor = '#ffffff';
+            updateEraserOpacityPreview() 
         }
         
         // Update color preview
         function updateColorPreview() {
             pencilColorPreview.style.backgroundColor = pencilSettings.color;
         }
-        
+        function updateEraserOpacityPreview() {
+    eraserBrushOpacityPreview.style.opacity = eraserSettings.opacity;
+}
         // Position panel above tool
         function positionPanel(panel, tool) {
             const toolRect = tool.getBoundingClientRect();
@@ -3811,7 +3816,7 @@ function eragerPencile(){
                 // Activate pencil
                 pencilActive = true;
                 pencilTool.classList.add('active');
-                canvas.style.cursor = 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="black" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>\') 0 24, auto';
+                canvas.style.cursor = 'url(\'/assets/images/pencil.png\') 0 24, auto';
                 document.querySelector("#draw").style.pointerEvents = "auto";
                 // Deactivate eraser if active
                 if (eraserActive) {
@@ -3840,7 +3845,7 @@ function eragerPencile(){
                 // Activate eraser
                 eraserActive = true;
                 eraserTool.classList.add('active');
-                canvas.style.cursor = 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="black" d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0 1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.83-10.88c.79-.78 2.05-.78 2.83 0L16.24 3.56zM4.22 15.58l3.54 3.53c.39.39 1.02.39 1.41 0l3.53-3.53-4.95-4.95-3.53 3.95z"/></svg>\') 12 12, auto';
+                canvas.style.cursor = 'url(\'assets/images/eraser.png\') 12 12, auto';
                  document.querySelector("#draw").style.pointerEvents = "auto";
                 // Deactivate pencil if active
                 if (pencilActive) {
@@ -3872,6 +3877,7 @@ function eragerPencile(){
                 ctx.globalCompositeOperation = 'source-over';
             } else if (eraserActive) {
                 ctx.lineWidth = eraserSettings.size;
+                ctx.globalAlpha = eraserSettings.opacity;
                 ctx.globalCompositeOperation = 'destination-out';
             }
         }
@@ -3963,7 +3969,10 @@ function eragerPencile(){
             eraserSettings.size = parseInt(e.target.value);
             updateEraserBrushPreview();
         });
-        
+        eraserBrushOpacity.addEventListener('input', (e) => {
+    eraserSettings.opacity = parseFloat(e.target.value);
+    updateEraserBrushPreview();
+});
         // Mouse events
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
