@@ -2495,11 +2495,99 @@ function updatePropertiesModal(cube) {
 
 initCubePropertiesModal();
 
-  // Initialize grpCounter with current maximum
+  // Initialize grpCounter with current maximum..new add
   grpCounter = getCurrentMaxGroupCounter();
 
-  function generateHoverHelpers() {
- var adjustTopCont = {
+//   function generateHoverHelpers() {
+//  var adjustTopCont = {
+//         0: [-35, 0],
+//         45: [-25, 20],
+//         90: [-35, 35],
+//         135: [-25, 45],
+//         180: [-35, 40],
+//         225: [-60, 55],
+//         270: [-70, 35],
+//         315: [-55, 15],
+//     };
+
+//     var adjustDownCont = {
+//         0: [-35, 0],
+//         45: [-64, 6],
+//         90: [-90, -18],
+//         135: [-63, -46],
+//         180: [-35, -68],
+//         225: [-20, -36],
+//         270: [-15, -18],
+//         315: [-17, 0],
+//     };
+
+
+//    $(".downcont, .uppercont").each(function () {
+//         // Check if the connector belongs to a locked group
+//         var groupContainer = $(this).closest(".grpCont");
+//         var isConnectorLocked = groupContainer.length ? isGroupLocked(groupContainer) : false;
+        
+//         if (
+//             $(this).hasClass("enable") &&
+//             !$(this).parents(".grpCont").hasClass("ui-draggable-dragging") &&
+//             !$(this).parents(".tool-grp")[0] &&
+//             !isConnectorLocked // NEW: Skip locked group connectors
+//         ) {
+//             var transformMtrx = $(this).parents(".hasGroup").css("transform");
+//             var tempSelector = new Date().getTime() + parseInt(Math.random() * 1000);
+//             $(this).attr("hover-helper", tempSelector);
+
+//             var position = this.getBoundingClientRect();
+//             var rotate = $(this).parents(".hasGroup").attr("rotateval");
+
+//             var height = $(this).height();
+//             var width = $(this).width();
+
+//             if ($(this).hasClass("uppercont")) {
+//                 var top = $(this).offset().top + adjustTopCont[rotate][1];
+//                 var left = position.left + adjustTopCont[rotate][0];
+//             } else if ($(this).hasClass("downcont")) {
+//                 var top = $(this).offset().top + adjustDownCont[rotate][1];
+//                 var left = position.left + adjustDownCont[rotate][0];
+//             }
+            
+//             var grpWrapper = $(this).parents(".hasGroup");
+//             var trns_origine = grpWrapper.offset();
+
+//             var str = '<div class="hover-helper" id="' + tempSelector + '" ></div>';
+//             $("body").append(str);
+
+//             var ht = 0;
+//             var tp = 0;
+//             var wd = 0;
+            
+//             wd = 70;
+
+//             if ($(this).hasClass("uppercont")) {
+//                 ht = 90;
+//                 tp = -60;
+//             } else if ($(this).hasClass("downcont")) {
+//                 ht = 90;
+//                 tp = -7;
+//             }
+
+//             $("#" + tempSelector).css({
+//                 height: height + ht + "px",
+//                 width: width + wd + "px",
+//                 top: top + tp + "px",
+//                 left: left + "px",
+//                 transform: "rotate(" + rotate + "deg)",
+//             });
+//             addEvents();
+//         }
+//     });
+    
+//     makeHoverHelperDroppable();
+// }
+//kk
+
+function generateHoverHelpers() {
+    var adjustTopCont = {
         0: [-35, 0],
         45: [-25, 20],
         90: [-35, 35],
@@ -2521,8 +2609,7 @@ initCubePropertiesModal();
         315: [-17, 0],
     };
 
-
-   $(".downcont, .uppercont").each(function () {
+    $(".downcont, .uppercont").each(function () {
         // Check if the connector belongs to a locked group
         var groupContainer = $(this).closest(".grpCont");
         var isConnectorLocked = groupContainer.length ? isGroupLocked(groupContainer) : false;
@@ -2531,7 +2618,7 @@ initCubePropertiesModal();
             $(this).hasClass("enable") &&
             !$(this).parents(".grpCont").hasClass("ui-draggable-dragging") &&
             !$(this).parents(".tool-grp")[0] &&
-            !isConnectorLocked // NEW: Skip locked group connectors
+            !isConnectorLocked // Skip locked group connectors
         ) {
             var transformMtrx = $(this).parents(".hasGroup").css("transform");
             var tempSelector = new Date().getTime() + parseInt(Math.random() * 1000);
@@ -2578,13 +2665,14 @@ initCubePropertiesModal();
                 left: left + "px",
                 transform: "rotate(" + rotate + "deg)",
             });
-            addEvents();
+            
+            // FIX: Make hover helpers more sensitive and ensure they're droppable
+            makeHoverHelperDroppable($("#" + tempSelector));
         }
     });
-    
-    makeHoverHelperDroppable();
 }
-//kk
+
+
 function removeHoverHelpers() {
     $(".hover-helper").each(function () {
         $(this).remove();
@@ -2924,46 +3012,80 @@ function setCubesPosition() {
     $("#grp" + grpCounter + " #rotategrp3").css({ top: groupHeight + "px" });
 }
 
-  function makeHoverHelperDroppable() {
-    if (
-      uagent.indexOf("ipad") != -1 ||
-      uagent.indexOf("iphone") != -1 ||
-      uagent.indexOf("android") != -1
-    ) {
-      $(".hover-helper").droppable({
-        tolerance: "touch",
-        over: function () {
-          grpHit = true;
-          console.log("hover helper touch ", hitConnector);
-          if ($("[hover-helper='" + this.id + "']").hasClass("uppercont")) {
-            console.log("-----up-----");
-            hitConnector = "up";
-            $("[hover-helper='" + this.id + "']").css({
-              opacity: "1",
-            });
-          } else if (
-            $("[hover-helper='" + this.id + "']").hasClass("downcont")
-          ) {
-            console.log("-----down-----");
-            hitConnector = "down";
-            $("[hover-helper='" + this.id + "']").css({
-              opacity: "1",
-            });
-          }
+  // function makeHoverHelperDroppable() {
+  //   if (
+  //     uagent.indexOf("ipad") != -1 ||
+  //     uagent.indexOf("iphone") != -1 ||
+  //     uagent.indexOf("android") != -1
+  //   ) {
+  //     $(".hover-helper").droppable({
+  //       tolerance: "touch",
+  //       over: function () {
+  //         grpHit = true;
+  //         console.log("hover helper touch ", hitConnector);
+  //         if ($("[hover-helper='" + this.id + "']").hasClass("uppercont")) {
+  //           console.log("-----up-----");
+  //           hitConnector = "up";
+  //           $("[hover-helper='" + this.id + "']").css({
+  //             opacity: "1",
+  //           });
+  //         } else if (
+  //           $("[hover-helper='" + this.id + "']").hasClass("downcont")
+  //         ) {
+  //           console.log("-----down-----");
+  //           hitConnector = "down";
+  //           $("[hover-helper='" + this.id + "']").css({
+  //             opacity: "1",
+  //           });
+  //         }
+  //       },
+  //       out: function () {
+  //         console.log("grpHit false...");
+  //         setTimeout(function () {
+  //           grpHit = false;
+  //           $(".downcont, .uppercont").each(function () {
+  //             $(this).css({ opacity: "0" });
+  //           });
+  //         }, 200);
+  //       },
+  //     });
+  //   }
+  // }
+function makeHoverHelperDroppable(hoverHelper) {
+    hoverHelper.droppable({
+        tolerance: "pointer",
+        greedy: true,
+        over: function (event, ui) {
+            grpHit = true;
+            var helperId = $(this).attr("id");
+            var connector = $("[hover-helper='" + helperId + "']");
+            
+            if (connector.hasClass("uppercont")) {
+                hitConnector = "up";
+                connector.css({ opacity: "1" });
+            } else if (connector.hasClass("downcont")) {
+                hitConnector = "down"; 
+                connector.css({ opacity: "1" });
+            }
+            
+            // Store the target group
+            currentGrpCounter = connector.closest(".grpCont").attr("id").split("grpCont")[1];
+            console.log("Hover over connector of group:", currentGrpCounter);
         },
         out: function () {
-          console.log("grpHit false...");
-          setTimeout(function () {
-            grpHit = false;
-            $(".downcont, .uppercont").each(function () {
-              $(this).css({ opacity: "0" });
-            });
-          }, 200);
+            setTimeout(function () {
+                grpHit = false;
+                $(".downcont, .uppercont").each(function () {
+                    $(this).css({ opacity: "0" });
+                });
+            }, 100);
         },
-      });
-    }
-  }
-
+        drop: function (event, ui) {
+            // This ensures the drop event is handled by the main drop handler
+            console.log("Drop on hover helper detected");
+        }
+    });
+}
   var tempArrX = [];
   var tempArrY = [];
 
