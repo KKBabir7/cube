@@ -319,7 +319,7 @@
                       <div class="panel-title">Pencil Settings</div>
                       <div class="close-btn" id="closePencilPanel">✕</div>
                     </div>
-                    <label for="pencilBrushSize">Brush Size</label>
+                    <label for="pencilBrushSize">Pencil Size</label>
                     <input
                       type="range"
                       class="brushSize"
@@ -328,7 +328,7 @@
                       min="1"
                       max="50"
                     />
-                    <div class="brush-size-preview" id="pencilBrushSizePreview"></div>
+                    <div class="brush-size-preview" id="pencilBrushSizePreview" style="margin-top: 8px;margin-bottom: 5px;"></div>
 
                     <label for="pencilBrushOpacity">Opacity</label>
                     <input
@@ -354,7 +354,9 @@
                       <div class="panel-title">Eraser Settings</div>
                       <div class="close-btn" id="closeEraserPanel">✕</div>
                     </div>
-                    <label for="eraserBrushSize">Brush Size</label>
+                    <label for="eraserBrushSize">Eraser Size</label>
+                   
+
                     <input
                       type="range"
                       class="brushSize"
@@ -363,9 +365,9 @@
                       min="1"
                       max="50"
                     />
-                    <div class="brush-size-preview" id="eraserBrushSizePreview"></div>
-<div class="brush-opacity-preview" id="eraserBrushOpacityPreview"></div>
+                     <div class="brush-size-preview" id="eraserBrushSizePreview" style="margin-top: 8px;margin-bottom: 5px;"></div>
                     <label for="eraserBrushOpacity">Opacity</label>
+                    <div style="display: none;" class="brush-opacity-preview" id="eraserBrushOpacityPreview"></div>
 <input type="range" class="brushOpacity" id="eraserBrushOpacity" value="1" min="0.1" max="1" step="0.1">
                   </div>
               </div>
@@ -451,6 +453,7 @@
               
             </div>
               <div class="cubecnager">
+                 <label>Cube Shape</label>
                   <select id="cubeTypeSelector">
                     <option value="kids" selected>Kids Cube</option>
                     <option value="raw">Raw Cube</option>
@@ -665,7 +668,7 @@
       setToolCursor(null);
     })();
   </script> -->
-
+<!-- 
   <script>
     const containersd = document.body; // or the parent of tempItem
 
@@ -690,7 +693,7 @@
 
     // Start observing DOM changes
     observer.observe(containersd, { childList: true, subtree: true });
-  </script>
+  </script> -->
   <!-- <script>
   function moveThemeChanger() {
     const themeChanger = document.querySelector('.themechnager-menubar');

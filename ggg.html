@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unifix Cube Tool — Interactive</title>
+  <style>
+    /* Basic layout */
+    :root{--tray-width:100px;--cube-size:48px}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;height:100vh;display:flex;flex-direction:column}
+    .topbar{height:48px;background:#111;color:#fff;display:flex;align-items:center;padding:0 12px;gap:12px}
+    .wrap{flex:1;display:flex;min-height:0}
+
+    /* Left tray */
+    .tray{width:var(--tray-width);background:#f3f3f3;border-right:1px solid #ddd;padding:8px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center}
+    .cube-list{width:100%;display:flex;flex-direction:column;gap:8px;align-items:center}
+    .cube{width:var(--cube-size);height:var(--cube-size);border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;cursor:grab;user-select:none}
+    .cube.locked{opacity:.5;cursor:not-allowed}
+
+    /* work area */
+    .dropping-wrapper{flex:1;background:linear-gradient(180deg,#fff,#f9faff);position:relative}
+    .dropping-container{position:relative;height:100%;width:100%;overflow:auto}
+
+    /* visual helper for connection */
+    .connect-highlight{position:absolute;height:6px;background:rgba(40,150,255,.45);border-radius:3px;pointer-events:none;transform-origin:left center}
+
+    /* icons shown on hover */
+    .icon-btn{position:absolute;display:flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;font-size:12px;cursor:pointer}
+    .icon-rotate{right:-10px;top:-10px}
+    .icon-split{left:-10px;top:-10px}
+
+    /* group label */
+    .group-badge{position:absolute;background:#ffea00;padding:2px 6px;border-radius:10px;font-size:12px}
+
+    /* controls below tray */
+    .controls{padding:8px;border-top:1px solid #eee;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .btn{padding:6px 10px;border-radius:6px;background:#007bff;color:#fff;border:none;cursor:pointer}
+    .btn.toggle{background:#444}
+    .btn.danger{background:#d9534f}
+    .btn.small{padding:4px 8px;font-size:13px}
+
+    /* context menu */
+    .context-menu{position:fixed;background:#fff;border:1px solid #ddd;box-shadow:0 6px 18px rgba(0,0,0,.12);z-index:9999;padding:6px;border-radius:6px;display:none;min-width:160px}
+    .context-menu .item{padding:6px 8px;cursor:pointer;border-radius:4px}
+    .context-menu .item:hover{background:#f0f0f0}
+
+    /* properties modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:10000}
+    .modal{background:#fff;padding:16px;border-radius:8px;min-width:260px}
+
+    /* small helpers */
+    .hidden{display:none}
+    .help{font-size:12px;color:#666}
+  </style>
+</head>
+<body>
+  <div class="topbar">Unifix Cube Tool</div>
+  <div class="wrap">
+    <aside class="tray">
+      <div class="cube-list" id="cubeTray"></div>
+      <div class="controls" style="margin-top:8px">
+        <button class="btn small" id="toggleGroupCount">Group Count</button>
+        <button class="btn small" id="toggleDeleteMode">Delete Mode</button>
+        <button class="btn small" id="undoBtn">Undo</button>
+        <button class="btn small" id="redoBtn">Redo</button>
+        <button class="btn small" id="clearBtn">Clear History</button>
+      </div>
+    </aside>
+
+    <main class="dropping-wrapper">
+      <div class="dropping-container" id="droppingContainer"></div>
+      <div id="connectHighlight" class="connect-highlight hidden"></div>
+    </main>
+  </div>
+
+  <!-- Context Menu -->
+  <div id="contextMenu" class="context-menu"></div>
+
+  <!-- Modal -->
+  <div id="modalBackdrop" class="modal-backdrop"><div class="modal" id="propertiesModal"></div></div>
+
+  <!-- Dependencies: jQuery + interact.js -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+  <script>
+  // -----------------------------
+  // Data model
+  // -----------------------------
+  const state = {
+    cubes: {}, // id -> {id, el, x,y,angle,locked,groupId}
+    groups: {}, // groupId -> {id, cubes: [ids], x,y,angle}
+    nextCube: 1,
+    nextGroup: 1,
+    copied: null,
+    history: [],
+    historyIndex: -1,
+    showGroupCount:false,
+    deleteMode:false
+  }
+
+  const CONTAINER = document.getElementById('droppingContainer');
+  const TRAY = document.getElementById('cubeTray');
+  const HIGHLIGHT = document.getElementById('connectHighlight');
+
+  // helper to push snapshot for undo
+  function pushHistory(actionDesc=''){
+    const snapshot = {
+      cubes: JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(state.cubes).map(([k,v])=>[k,{
+        id:v.id,x:v.x,y:v.y,angle:v.angle,locked:v.locked,groupId:v.groupId
+      }])))),
+      groups: JSON.parse(JSON.stringify(state.groups)),
+      nextCube: state.nextCube, nextGroup: state.nextGroup,
+      desc: actionDesc
+    }
+    // drop redo branch
+    state.history = state.history.slice(0, state.historyIndex+1)
+    state.history.push(snapshot)
+    state.historyIndex = state.history.length-1
+    updateUndoRedoButtons()
+  }
+
+  function restoreSnapshot(snapshot){
+    // clear DOM cubes and rebuild
+    // remove all cube elements inside container
+    for(const id in state.cubes){
+      const el = state.cubes[id].el
+      if(el && el.parentNode) el.parentNode.removeChild(el)
+    }
+    state.cubes = {}
+    state.groups = {}
+    state.nextCube = snapshot.nextCube
+    state.nextGroup = snapshot.nextGroup
+
+    // recreate cubes
+    for(const id in snapshot.cubes){
+      const data = snapshot.cubes[id]
+      const el = createCubeElement(id)
+      CONTAINER.appendChild(el)
+      state.cubes[id] = {...data, el}
+      setCubeTransform(el, data.x, data.y, data.angle)
+      el.dataset.locked = data.locked
+    }
+    // restore groups
+    state.groups = snapshot.groups || {}
+    // rebind interactions
+    enableInteract()
+    renderGroupBadges()
+  }
+
+  function updateUndoRedoButtons(){
+    document.getElementById('undoBtn').disabled = state.historyIndex<=0
+    document.getElementById('redoBtn').disabled = state.historyIndex>=state.history.length-1
+  }
+
+  // -----------------------------
+  // Create initial cubes in tray
+  // -----------------------------
+  function createTrayCubes(n=12){
+    for(let i=0;i<n;i++){
+      const id = 'c'+state.nextCube++
+      const el = document.createElement('div')
+      el.className = 'cube'
+      el.style.background = randomColor(i)
+      el.textContent = i+1
+      el.dataset.id = id
+      // position within tray via parent flex
+      TRAY.appendChild(el)
+
+      // but create a model cube with off-screen coords (not in container) until dragged in
+      state.cubes[id] = {id, el, x:10, y:10, angle:0, locked:false, groupId:null, tray:true}
+
+      // allow dragging out: we'll use interact's manualStart for cloning
+      el.addEventListener('pointerdown', trayPointerDown)
+    }
+  }
+
+  function randomColor(i){
+    const colors = ['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#845EC2','#FF9671','#2E7A7A','#A3D2CA','#F08A5D','#B5838D','#00C2BA','#FFC75F']
+    return colors[i%colors.length]
+  }
+
+  // -----------------------------
+  // Create cube inside dropping container
+  // -----------------------------
+  function createCubeElement(id){
+    const wrapper = document.createElement('div')
+    wrapper.className = 'cube' // base styles
+    wrapper.dataset.id = id
+    wrapper.innerHTML = `<span class="label"></span>`
+
+    // overlay icons
+    const rotate = document.createElement('div'); rotate.className='icon-btn icon-rotate hidden'; rotate.innerHTML='⤾'
+    const split = document.createElement('div'); split.className='icon-btn icon-split hidden'; split.innerHTML='↡'
+    wrapper.appendChild(rotate); wrapper.appendChild(split)
+
+    // event handlers
+    wrapper.addEventListener('contextmenu', onCubeContext)
+    wrapper.addEventListener('mouseenter', ()=>{ rotate.classList.remove('hidden'); split.classList.remove('hidden') })
+    wrapper.addEventListener('mouseleave', ()=>{ rotate.classList.add('hidden'); split.classList.add('hidden') })
+
+    rotate.addEventListener('click',(e)=>{ e.stopPropagation(); rotateGroupOfCube(id,45) })
+    split.addEventListener('click',(e)=>{ e.stopPropagation(); splitFromCube(id) })
+
+    wrapper.addEventListener('click',(e)=>{
+      if(state.deleteMode){ deleteCube(id); }
+    })
+
+    return wrapper
+  }
+
+  // -----------------------------
+  // Dragging from tray: clone and drop into container
+  // -----------------------------
+  let draggingClone = null
+  function trayPointerDown(e){
+    const source = e.currentTarget
+    // create clone
+    const id = 'c'+state.nextCube++
+    const el = createCubeElement(id)
+    el.style.position='absolute'
+    el.style.left = (e.clientX - 24) + 'px'
+    el.style.top = (e.clientY - 24) + 'px'
+    el.style.zIndex = 999
+    document.body.appendChild(el)
+    draggingClone = {id, el}
+    state.cubes[id] = {id, el, x:e.clientX - CONTAINER.getBoundingClientRect().left - 24, y:e.clientY - CONTAINER.getBoundingClientRect().top -24, angle:0, locked:false, groupId:null, tray:false}
+
+    function move(ev){ el.style.left = (ev.clientX - 24) + 'px'; el.style.top = (ev.clientY - 24) + 'px' }
+    function up(ev){
+      document.removeEventListener('pointermove', move)
+      document.removeEventListener('pointerup', up)
+      // if dropped inside container bounds, append there
+      const rc = CONTAINER.getBoundingClientRect()
+      if(ev.clientX>=rc.left && ev.clientX<=rc.right && ev.clientY>=rc.top && ev.clientY<=rc.bottom){
+        el.style.position='absolute'
+        el.style.left = (ev.clientX - rc.left - 24) + 'px'
+        el.style.top = (ev.clientY - rc.top - 24) + 'px'
+        CONTAINER.appendChild(el)
+        state.cubes[id].x = ev.clientX - rc.left - 24
+        state.cubes[id].y = ev.clientY - rc.top - 24
+        pushHistory('add cube')
+        enableInteract() // activate interact on new element
+      } else {
+        // not dropped: remove clone
+        if(el && el.parentNode) el.parentNode.removeChild(el)
+        delete state.cubes[id]
+        state.nextCube--
+      }
+      draggingClone=null
+    }
+    document.addEventListener('pointermove', move)
+    document.addEventListener('pointerup', up)
+  }
+
+  // -----------------------------
+  // Interact.js — dragging & inertia
+  // -----------------------------
+  function enableInteract(){
+    interact('.cube').unset()
+
+    interact('.cube')
+      .draggable({
+        listeners: {
+          start (event) {
+            const id = event.target.dataset.id
+            if(!state.cubes[id]) return
+            if(state.cubes[id].locked) { event.interaction.stop(); return }
+            event.target.style.touchAction = 'none'
+            event.target.style.cursor='grabbing'
+          },
+          move (event) {
+            const id = event.target.dataset.id
+            if(!state.cubes[id] || state.cubes[id].locked) return
+            // if part of group, move whole group
+            const gId = state.cubes[id].groupId
+            if(gId){
+              const grp = state.groups[gId]
+              grp.x = (grp.x||0) + event.dx
+              grp.y = (grp.y||0) + event.dy
+              // apply to each cube in group
+              grp.cubes.forEach(cid=>{
+                const c = state.cubes[cid]
+                c.x += event.dx; c.y += event.dy
+                setCubeTransform(c.el,c.x,c.y,c.angle)
+              })
+            } else {
+              const c = state.cubes[id]
+              c.x = (c.x||0) + event.dx
+              c.y = (c.y||0) + event.dy
+              setCubeTransform(event.target,c.x,c.y,c.angle)
+            }
+            // during move show proximity highlight
+            checkProximity(event.target)
+          },
+          end (event) {
+            const id = event.target.dataset.id
+            if(state.cubes[id] && state.cubes[id].locked) return
+            event.target.style.cursor='grab'
+            // after drop, attempt to magnetically attach
+            attemptAttach(event.target)
+            pushHistory('move')
+            HIGHLIGHT.classList.add('hidden')
+          }
+        },
+        modifiers: [
+          interact.modifiers.restrictRect({ restriction: 'parent', endOnly: true })
+        ],
+        inertia: true
+      })
+  }
+
+  function setCubeTransform(el, x, y, angle){
+    el.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`
+    el.dataset.x = x; el.dataset.y = y; el.dataset.angle = angle
+    // label
+    const lab = el.querySelector('.label')
+    if(lab) lab.textContent = el.dataset.id || ''
+  }
+
+  // -----------------------------
+  // Proximity checking and highlight
+  // -----------------------------
+  function checkProximity(movingEl){
+    const rc = CONTAINER.getBoundingClientRect()
+    const mRect = movingEl.getBoundingClientRect()
+    const center = {x:mRect.left + mRect.width/2, y:mRect.top + mRect.height/2}
+    let nearest=null, nearestDist=Infinity
+    for(const id in state.cubes){
+      const c = state.cubes[id]
+      if(!c.el || c.el===movingEl) continue
+      if(c.tray) continue
+      const r = c.el.getBoundingClientRect()
+      const ccenter = {x:r.left + r.width/2, y:r.top + r.height/2}
+      const dx = center.x - ccenter.x, dy = center.y - ccenter.y
+      const dist = Math.hypot(dx,dy)
+      if(dist < nearestDist){ nearestDist=dist; nearest=c }
+    }
+    if(nearest && nearestDist <= 58){ // roughly within 10px edge-to-edge given cube size ~48
+      // show highlight centered under nearest
+      const r = nearest.el.getBoundingClientRect()
+      HIGHLIGHT.style.width = r.width + 'px'
+      HIGHLIGHT.style.left = (r.left - rc.left) + 'px'
+      HIGHLIGHT.style.top = (r.bottom - rc.top + 6) + 'px'
+      HIGHLIGHT.classList.remove('hidden')
+      HIGHLIGHT.dataset.target = nearest.id
+    } else {
+      HIGHLIGHT.classList.add('hidden')
+      HIGHLIGHT.dataset.target = ''
+    }
+  }
+
+  function attemptAttach(el){
+    const targetId = HIGHLIGHT.dataset.target
+    if(!targetId) return
+    const movingId = el.dataset.id
+    if(!state.cubes[movingId] || !state.cubes[targetId]) return
+    // attach moving to target's group or form new group
+    const targetGroup = state.cubes[targetId].groupId
+    const movingGroup = state.cubes[movingId].groupId
+
+    if(movingId === targetId) return
+
+    if(targetGroup){
+      // add moving to existing group
+      state.groups[targetGroup].cubes.push(movingId)
+      state.cubes[movingId].groupId = targetGroup
+    } else {
+      // create new group with both
+      const gid = 'g'+state.nextGroup++
+      state.groups[gid] = {id:gid, cubes:[targetId, movingId], x:0,y:0,angle:0}
+      state.cubes[targetId].groupId = gid
+      state.cubes[movingId].groupId = gid
+    }
+    // normalize positions so relative stays
+    // (we store absolute positions in cubes, so group move will update group coords)
+    renderGroupBadges()
+    pushHistory('attach')
+  }
+
+  // When deleting cube in middle, reconnect above/below
+  function deleteCube(id){
+    if(!state.cubes[id]) return
+    const gid = state.cubes[id].groupId
+    if(gid){
+      const grp = state.groups[gid]
+      const idx = grp.cubes.indexOf(id)
+      grp.cubes.splice(idx,1)
+      // if group's size 1, dissolve
+      if(grp.cubes.length<=1){
+        const rem = grp.cubes.pop()
+        if(rem) state.cubes[rem].groupId = null
+        delete state.groups[gid]
+      }
+      // if removed in middle, ensure others remain (they already have absolute positions so nothing to do)
+    }
+    // remove DOM
+    const el = state.cubes[id].el
+    if(el && el.parentNode) el.parentNode.removeChild(el)
+    delete state.cubes[id]
+    pushHistory('delete')
+    renderGroupBadges()
+  }
+
+  // -----------------------------
+  // Split group at cube — separate that cube + all below it into new group
+  // 'below' defined as later indexes in group's array
+  // -----------------------------
+  function splitFromCube(id){
+    const gid = state.cubes[id].groupId
+    if(!gid) return
+    const grp = state.groups[gid]
+    const idx = grp.cubes.indexOf(id)
+    if(idx<0) return
+    const newIds = grp.cubes.splice(idx)
+    const newGid = 'g'+state.nextGroup++
+    state.groups[newGid] = {id:newGid, cubes: newIds.slice(), x:0,y:0,angle:0}
+    newIds.forEach(cid=>{ state.cubes[cid].groupId = newGid; state.cubes[cid].x += 15; state.cubes[cid].y += 15; setCubeTransform(state.cubes[cid].el, state.cubes[cid].x, state.cubes[cid].y, state.cubes[cid].angle) })
+    renderGroupBadges()
+    pushHistory('split')
+  }
+
+  // -----------------------------
+  // Rotate group or single cube by degrees
+  // -----------------------------
+  function rotateGroupOfCube(id, deg){
+    const gid = state.cubes[id].groupId
+    if(gid){
+      const grp = state.groups[gid]
+      grp.cubes.forEach(cid=>{ state.cubes[cid].angle = (state.cubes[cid].angle + deg) % 360; setCubeTransform(state.cubes[cid].el, state.cubes[cid].x, state.cubes[cid].y, state.cubes[cid].angle) })
+    } else {
+      state.cubes[id].angle = (state.cubes[id].angle + deg) % 360
+      setCubeTransform(state.cubes[id].el, state.cubes[id].x, state.cubes[id].y, state.cubes[id].angle)
+    }
+    pushHistory('rotate')
+  }
+
+  // -----------------------------
+  // Context menu
+  // -----------------------------
+  const CONTEXT = document.getElementById('contextMenu')
+  document.addEventListener('contextmenu', function(e){
+    e.preventDefault()
+    const targetCube = e.target.closest('.cube')
+    openContextMenu(e.clientX, e.clientY, targetCube ? targetCube.dataset.id : null)
+  })
+
+  function openContextMenu(x,y, cubeId){
+    CONTEXT.innerHTML=''
+    if(cubeId){
+      addItem('Lock / Unlock',()=>{ toggleLockCube(cubeId); hideContext() })
+      addItem('Rotate 45°',()=>{ rotateGroupOfCube(cubeId,45); hideContext() })
+      addItem('Change Cube',()=>{ randomizeAppearance(cubeId); hideContext() })
+      addItem('Duplicate Cube',()=>{ duplicateCube(cubeId); hideContext() })
+      addItem('Delete Cube',()=>{ deleteCube(cubeId); hideContext() })
+      const gid = state.cubes[cubeId].groupId
+      if(gid){ addItem('Delete Group',()=>{ deleteGroup(gid); hideContext() }) }
+      addItem('Copy Cube/Group',()=>{ copyCubeOrGroup(cubeId); hideContext() })
+      addItem('Properties',()=>{ showProperties(cubeId); hideContext() })
+    } else {
+      addItem('Paste',()=>{ pasteAt(x,y); hideContext() })
+    }
+    CONTEXT.style.left = x+'px'; CONTEXT.style.top = y+'px'; CONTEXT.style.display='block'
+  }
+  function addItem(title,fn){ const it = document.createElement('div'); it.className='item'; it.textContent=title; it.onclick=fn; CONTEXT.appendChild(it) }
+  function hideContext(){ CONTEXT.style.display='none' }
+  document.addEventListener('click', ()=>{ hideContext() })
+
+  function toggleLockCube(id){ if(!state.cubes[id]) return; state.cubes[id].locked = !state.cubes[id].locked; state.cubes[id].el.classList.toggle('locked', state.cubes[id].locked); pushHistory('lock') }
+  function randomizeAppearance(id){ if(!state.cubes[id]) return; state.cubes[id].el.style.background = randomColor(Math.random()*100); pushHistory('change') }
+  function duplicateCube(id){ if(!state.cubes[id]) return; const original = state.cubes[id]; const nid = 'c'+state.nextCube++; const el = createCubeElement(nid); CONTAINER.appendChild(el); state.cubes[nid] = {id:nid, el, x:original.x+15, y:original.y+15, angle:original.angle, locked:false, groupId:null}; setCubeTransform(el, state.cubes[nid].x, state.cubes[nid].y, state.cubes[nid].angle); enableInteract(); pushHistory('duplicate') }
+
+  function deleteGroup(gid){ const grp = state.groups[gid]; if(!grp) return; grp.cubes.forEach(cid=>{ const el = state.cubes[cid].el; if(el && el.parentNode) el.parentNode.removeChild(el); delete state.cubes[cid] }); delete state.groups[gid]; pushHistory('deleteGroup'); renderGroupBadges() }
+
+  function copyCubeOrGroup(id){ const gid = state.cubes[id].groupId; if(gid){ state.copied = {type:'group', data: JSON.parse(JSON.stringify(state.groups[gid]))} } else { state.copied = {type:'cube', data: JSON.parse(JSON.stringify(state.cubes[id]))} } }
+
+  function pasteAt(x,y){ if(!state.copied){ alert('No copied cube available.'); return }
+    const rc = CONTAINER.getBoundingClientRect()
+    const localX = x - rc.left - 24; const localY = y - rc.top -24
+    if(state.copied.type==='cube'){
+      const nid = 'c'+state.nextCube++
+      const el = createCubeElement(nid); CONTAINER.appendChild(el);
+      state.cubes[nid] = {id:nid, el, x:localX, y:localY, angle:state.copied.data.angle||0, locked:false, groupId:null}; setCubeTransform(el, localX, localY, state.copied.data.angle||0)
+    } else {
+      // group
+      const newGid = 'g'+state.nextGroup++
+      const cubes = []
+      state.copied.data.cubes.forEach(origId=>{
+        const nid = 'c'+state.nextCube++
+        const el = createCubeElement(nid); CONTAINER.appendChild(el);
+        const ox = origId.x || 0, oy = origId.y || 0
+        state.cubes[nid] = {id:nid, el, x:localX + (ox||0), y:localY + (oy||0), angle: origId.angle||0, locked:false, groupId:newGid }
+        setCubeTransform(el, state.cubes[nid].x, state.cubes[nid].y, state.cubes[nid].angle)
+        cubes.push(nid)
+      })
+      state.groups[newGid] = {id:newGid, cubes}
+    }
+    enableInteract(); pushHistory('paste') }
+
+  function showProperties(id){
+    const modal = document.getElementById('propertiesModal')
+    let html = ''
+    const gid = state.cubes[id].groupId
+    const angle = state.cubes[id].angle||0
+    html += `<h3>Cube ${id}</h3><p>Rotation: ${angle}°</p>`
+    if(gid){ const g = state.groups[gid]; html += `<p>Group: ${gid} (size ${g.cubes.length})</p>`; html += `<p>Index in group: ${g.cubes.indexOf(id)}</p>` }
+    modal.innerHTML = html + '<div style="text-align:right;margin-top:8px"><button id="closeModal" class="btn small">Close</button></div>'
+    document.getElementById('modalBackdrop').style.display='flex'
+    document.getElementById('closeModal').onclick = ()=>{ document.getElementById('modalBackdrop').style.display='none' }
+  }
+
+  // -----------------------------
+  // delete mode toggle
+  // -----------------------------
+  document.getElementById('toggleDeleteMode').addEventListener('click', ()=>{ state.deleteMode = !state.deleteMode; document.getElementById('toggleDeleteMode').classList.toggle('btn-danger', state.deleteMode); document.getElementById('toggleDeleteMode').textContent = state.deleteMode ? 'Delete Mode (ON)' : 'Delete Mode' })
+
+  // -----------------------------
+  // group badges
+  // -----------------------------
+  function renderGroupBadges(){
+    // remove old badges
+    document.querySelectorAll('.group-badge').forEach(el=>el.remove())
+    if(!state.showGroupCount) return
+    let idx=1
+    for(const gid in state.groups){
+      const g = state.groups[gid]
+      const first = state.cubes[g.cubes[0]]
+      if(!first) continue
+      const badge = document.createElement('div'); badge.className='group-badge'; badge.textContent = 'G'+idx
+      const rc = CONTAINER.getBoundingClientRect(); const r = first.el.getBoundingClientRect()
+      badge.style.left = (r.left - rc.left) + 'px'
+      badge.style.top = (r.top - rc.top - 24) + 'px'
+      CONTAINER.appendChild(badge)
+      idx++
+    }
+  }
+  document.getElementById('toggleGroupCount').addEventListener('click', ()=>{ state.showGroupCount = !state.showGroupCount; renderGroupBadges() })
+
+  // -----------------------------
+  // Undo / Redo / Clear
+  // -----------------------------
+  document.getElementById('undoBtn').addEventListener('click', ()=>{ if(state.historyIndex<=0) return; state.historyIndex--; restoreSnapshot(state.history[state.historyIndex]); updateUndoRedoButtons() })
+  document.getElementById('redoBtn').addEventListener('click', ()=>{ if(state.historyIndex>=state.history.length-1) return; state.historyIndex++; restoreSnapshot(state.history[state.historyIndex]); updateUndoRedoButtons() })
+  document.getElementById('clearBtn').addEventListener('click', ()=>{ // reset
+    for(const id in state.cubes){ const el=state.cubes[id].el; if(el && el.parentNode) el.parentNode.removeChild(el) }
+    state.cubes = {}; state.groups={}; state.nextCube=1; state.nextGroup=1; state.history=[]; state.historyIndex=-1; TRAY.innerHTML=''; createTrayCubes(12); updateUndoRedoButtons(); HIGHLIGHT.classList.add('hidden')
+  })
+
+  // -----------------------------
+  // copy/paste keyboard shortcuts
+  // -----------------------------
+  document.addEventListener('keydown', (e)=>{
+    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='c'){
+      const sel = document.querySelector('.cube:hover')
+      if(sel) copyCubeOrGroup(sel.dataset.id)
+    }
+    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='v'){
+      // paste center
+      const rc = CONTAINER.getBoundingClientRect(); pasteAt(rc.left + 100, rc.top + 100)
+    }
+  })
+
+  // -----------------------------
+  // Utility: delete entire group via button
+  // -----------------------------
+  function deleteGroupById(gid){ deleteGroup(gid) }
+
+  // -----------------------------
+  // Initialization
+  // -----------------------------
+  createTrayCubes(12)
+  enableInteract()
+  pushHistory('initial')
+
+  // hide context on escape
+  document.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ hideContext(); document.getElementById('modalBackdrop').style.display='none' } })
+
+  // render badges periodically to follow moving elements
+  setInterval(renderGroupBadges,300)
+  </script>
+</body>
+</html>

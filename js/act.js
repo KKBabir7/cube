@@ -672,6 +672,7 @@ setTimeout(function() {
       $(".hover-helper").on("mouseleave", function (e) {
         setTimeout(function () {
           grpHit = false;
+           hitConnector = "";
           $(".downcont, .uppercont").each(function () {
             $(this).css({ opacity: "0" });
           });
@@ -799,7 +800,7 @@ setTimeout(function() {
                 "z-index": zIndex,
               });
             });
-          } //separate cubes group or split group into two partsjj
+          } //separate cubes group or split group into two partsjjdddddg
                    else {
             currentGrpCounter = $(this).parent().attr("id").split("grp")[1];
             var totalCubeFound = 0;
@@ -1220,7 +1221,19 @@ setTimeout(function() {
         } else if ($(this).attr("id") == "eraser") {
           $("body").removeAttr("style");
           $("body").removeAttr("class");
-
+       
+          isDrawing = false;
+              pencilActive = false;
+              eraserActive = false;
+    $("#draw").css('pointer-events','none')
+    
+    $("#eraser").removeClass("disabled").addClass("enabled");
+    $("#pencilPanel").addClass('hide')
+    $("#pencilTool").removeClass("active")
+     $("#eraserPanel").addClass('hide')
+    $("#eraserTool").removeClass("active")
+    $("body").removeClass("addcursor");
+    $("body").removeClass("addcursorPencil");
           if (isSelectedTool != "eraser") {
             console.log("eraser selected");
             isSelectedTool = "eraser";
@@ -2571,25 +2584,30 @@ initCubePropertiesModal();
     
     makeHoverHelperDroppable();
 }
-
-  function removeHoverHelpers() {
+//kk
+function removeHoverHelpers() {
     $(".hover-helper").each(function () {
-      $(this).remove();
+        $(this).remove();
     });
     $(".downcont, .uppercont").each(function () {
-      $(this).removeAttr("hover-helper");
+        $(this).removeAttr("hover-helper");
+        // Ensure opacity is reset when not hovering
+        $(this).css({ opacity: "0" });
     });
 
+    // Reset hitConnector when helpers are removed
+    hitConnector = "";
+    
     //remove grpCont...
     $(".drop-container")
-      .find(".grpCont")
-      .each(function (index) {
-        if ($(this).find(".cubes-clone").length <= 0) {
-          console.log($(this)[0]);
-          $(this).remove();
-        }
-      });
-  }
+        .find(".grpCont")
+        .each(function (index) {
+            if ($(this).find(".cubes-clone").length <= 0) {
+                console.log($(this)[0]);
+                $(this).remove();
+            }
+        });
+}
 
 function makeGroupDraggable() {
     $(".grpCont").draggable({
@@ -2639,7 +2657,7 @@ function makeGroupDraggable() {
             $(".rotategrp").each(function (index) {
                 $(this).show();
             });
-           
+             $(".uppercont, .downcont").css({ opacity: "0" });
         },
     });
      resetTools();
@@ -2657,7 +2675,163 @@ function makeGroupDraggable() {
 
 var lockedGroups = new Set();
 
-// Update the existing setCubesPosition function to respect group locks
+// Update the existing setCubesPosition function to respect group lockslive
+// function setCubesPosition() {
+//     var totalCubes = 0;
+//     var totalConnectorHt = 0;
+//     var oneCubeHt = 0;
+//     oldHtOfRotateGrp = $("#grp" + currentGrpCounter).height();
+
+//     $("#grp" + currentGrpCounter)
+//         .find(".cubes-clone")
+//         .each(function (index) {
+//             if ($(this).is(":visible")) {
+//                 totalCubes = totalCubes + 1;
+//                 totalConnectorHt = totalConnectorHt + Math.abs(connectorHt);
+//                 oneCubeHt = $(this).height();
+//             }
+//         });
+
+//     newHtOfRotateGrp = Number(oneCubeHt * totalCubes) - totalConnectorHt + connectorHt;
+
+//     $(
+//         $("#grp" + currentGrpCounter)
+//             .find(".cubes-clone")
+//             .get()
+//             .reverse()
+//     ).each(function (index) {
+//         $(this).css({
+//             "z-index": index,
+//         });
+//     });
+
+//     var newId = 0;
+//     $($("#grp" + currentGrpCounter).find(".cubes-clone")).each(function (index) {
+//         if ($(this).is(":visible")) {
+//             newId = newId + 1;
+//             $(this).attr("newcubesid", Number(newId));
+//         }
+        
+//         // Reset all connectors first
+//         $(this).find(".uppercont").css({
+//             display: "none",
+//             opacity: "0"
+//         });
+//         $(this).find(".downcont").css({
+//             display: "none", 
+//             opacity: "0"
+//         });
+//         $(this).find(".uppercont").removeClass("enable");
+//         $(this).find(".downcont").removeClass("enable");
+//     });
+
+//     // FIXED: Only enable connectors for top and bottom cubes
+//     $($("#grp" + currentGrpCounter).find(".cubes-clone")).each(function (index) {
+//         var cubeId = $(this).attr("newcubesid");
+//         var isLocked = isCubeLocked($(this));
+        
+//         if (!isLocked) {
+//             if (cubeId == "1") {
+//                 // First cube - enable TOP connector only
+//                 $(this).find(".uppercont").addClass("enable");
+//                 $(this).find(".uppercont").css({
+//                     display: "block"
+//                 });
+//             } else if (cubeId == totalCubes) {
+//                 // Last cube - enable BOTTOM connector only  
+//                 $(this).find(".downcont").addClass("enable");
+//                 $(this).find(".downcont").css({
+//                     display: "block"
+//                 });
+//             } 
+
+
+// function setCubesPosition() {
+//     var totalCubes = 0;
+//     var totalConnectorHt = 0;
+//     var oneCubeHt = 0;
+//     oldHtOfRotateGrp = $("#grp" + currentGrpCounter).height();
+
+//     $("#grp" + currentGrpCounter)
+//         .find(".cubes-clone")
+//         .each(function (index) {
+//             if ($(this).is(":visible")) {
+//                 totalCubes = totalCubes + 1;
+//                 totalConnectorHt = totalConnectorHt + Math.abs(connectorHt);
+//                 oneCubeHt = $(this).height();
+//             }
+//         });
+
+//     newHtOfRotateGrp = Number(oneCubeHt * totalCubes) - totalConnectorHt + connectorHt;
+
+//     $(
+//         $("#grp" + currentGrpCounter)
+//             .find(".cubes-clone")
+//             .get()
+//             .reverse()
+//     ).each(function (index) {
+//         $(this).css({
+//             "z-index": index,
+//         });
+//     });
+
+//     var newId = 0;
+//     $($("#grp" + currentGrpCounter).find(".cubes-clone")).each(function (index) {
+//         if ($(this).is(":visible")) {
+//             newId = newId + 1;
+//             $(this).attr("newcubesid", Number(newId));
+//         }
+//         $(this).find(".uppercont").css({
+//             display: "none",
+//         });
+//         $(this).find(".downcont").css({
+//             display: "none",
+//         });
+//         $(this).find(".uppercont").css({
+//             opacity: "0",
+//         });
+//         $(this).find(".downcont").css({
+//             opacity: "0",
+//         });
+//     });
+
+//     $($("#grp" + currentGrpCounter).find(".cubes-clone")).each(function (index) {
+//         // NEW: Only enable connectors if group is not locked
+//         var groupContainer = $(this).closest(".grpCont");
+//         var isLocked = groupContainer.length ? isGroupLocked(groupContainer) : false;
+        
+//         if (!isLocked) {
+//             if ($(this).attr("newcubesid") == "1") {
+//                 $(this).find(".uppercont").addClass("enable");
+//                 $(this).find(".downcont").removeClass("enable");
+//                 $(this).find(".uppercont").css({
+//                     display: "block",
+//                 });
+//             } else if ($(this).attr("newcubesid") == totalCubes) {
+//                 $(this).find(".uppercont").removeClass("enable");
+//                 $(this).find(".downcont").addClass("enable");
+//                 $(this).find(".downcont").css({
+//                     display: "block",
+//                 });
+//             } else {
+//                 $(this).find(".uppercont").removeClass("enable");
+//                 $(this).find(".downcont").removeClass("enable");
+//             }
+//         } 
+// else {
+//                 $(this).find(".uppercont").removeClass("enable");
+//                 $(this).find(".downcont").removeClass("enable");
+//             }
+        
+//     });
+//    var totalCubes = $("#grp" + grpCounter).find(".cubes-clone").length;
+// var oneCubeHt = $("#grp" + grpCounter).find(".cubes-clone").first().height();
+// var groupHeight = (oneCubeHt * totalCubes) - (connectorHt * (totalCubes - 1));
+
+// $("#grp" + grpCounter + " #rotategrp2").css({ top: groupHeight + "px" });
+// $("#grp" + grpCounter + " #rotategrp3").css({ top: groupHeight + "px" });
+// }
+
 function setCubesPosition() {
     var totalCubes = 0;
     var totalConnectorHt = 0;
@@ -2707,25 +2881,31 @@ function setCubesPosition() {
         });
     });
 
+    // FIXED: Proper connector logic - only enable top connector for first cube and bottom connector for last cube
     $($("#grp" + currentGrpCounter).find(".cubes-clone")).each(function (index) {
+        var cubePosition = parseInt($(this).attr("newcubesid"));
+        
         // NEW: Only enable connectors if group is not locked
         var groupContainer = $(this).closest(".grpCont");
         var isLocked = groupContainer.length ? isGroupLocked(groupContainer) : false;
         
         if (!isLocked) {
-            if ($(this).attr("newcubesid") == "1") {
+            if (cubePosition === 1) {
+                // First cube - enable top connector only
                 $(this).find(".uppercont").addClass("enable");
                 $(this).find(".downcont").removeClass("enable");
                 $(this).find(".uppercont").css({
                     display: "block",
                 });
-            } else if ($(this).attr("newcubesid") == totalCubes) {
+            } else if (cubePosition === totalCubes) {
+                // Last cube - enable bottom connector only  
                 $(this).find(".uppercont").removeClass("enable");
                 $(this).find(".downcont").addClass("enable");
                 $(this).find(".downcont").css({
                     display: "block",
                 });
             } else {
+                // Middle cubes - disable both connectors
                 $(this).find(".uppercont").removeClass("enable");
                 $(this).find(".downcont").removeClass("enable");
             }
@@ -2735,12 +2915,13 @@ function setCubesPosition() {
             $(this).find(".downcont").removeClass("enable");
         }
     });
-   var totalCubes = $("#grp" + grpCounter).find(".cubes-clone").length;
-var oneCubeHt = $("#grp" + grpCounter).find(".cubes-clone").first().height();
-var groupHeight = (oneCubeHt * totalCubes) - (connectorHt * (totalCubes - 1));
+    
+    var totalCubes = $("#grp" + grpCounter).find(".cubes-clone").length;
+    var oneCubeHt = $("#grp" + grpCounter).find(".cubes-clone").first().height();
+    var groupHeight = (oneCubeHt * totalCubes) - (connectorHt * (totalCubes - 1));
 
-$("#grp" + grpCounter + " #rotategrp2").css({ top: groupHeight + "px" });
-$("#grp" + grpCounter + " #rotategrp3").css({ top: groupHeight + "px" });
+    $("#grp" + grpCounter + " #rotategrp2").css({ top: groupHeight + "px" });
+    $("#grp" + grpCounter + " #rotategrp3").css({ top: groupHeight + "px" });
 }
 
   function makeHoverHelperDroppable() {
@@ -3416,7 +3597,7 @@ function stopGroupCountMonitoring() {
 // NEW: Update your existing functions to maintain count displays
 
 
-initScreenshotFunctionality();
+
 
 // undo4545ffffupddgfabir
 
@@ -3668,9 +3849,9 @@ function resetTools() {
         pencilActive = false;
         eraserActive = false;
     $("#draw").css('pointer-events','none')
-    $("#pencil").css({ opacity: "0.6" });
+    // $("#pencil").css({ opacity: "0.6" });
     $("#eraser").css({ opacity: "0.6" });
-    $("#pencil").removeClass("disabled").addClass("enabled");
+    // $("#pencil").removeClass("disabled").addClass("enabled");
     $("#eraser").removeClass("disabled").addClass("enabled");
     $("#pencilPanel").addClass('hide')
     $("#pencilTool").removeClass("active")
@@ -3701,7 +3882,7 @@ function resetTools() {
 
 
 
-
+initScreenshotFunctionality();
 
 setTimeout(function() {
     undoreSaveState(); // Save initial empty statedddfdfd
@@ -3783,7 +3964,7 @@ const eraserBrushOpacityPreview = document.getElementById('eraserBrushOpacityPre
         function updateEraserBrushPreview() {
             eraserBrushSizePreview.style.width = `${eraserSettings.size}px`;
             eraserBrushSizePreview.style.height = `${eraserSettings.size}px`;
-            eraserBrushSizePreview.style.backgroundColor = '#ffffff';
+            eraserBrushSizePreview.style.backgroundColor = '#ffffffff';
             updateEraserOpacityPreview() 
         }
         
@@ -3792,7 +3973,7 @@ const eraserBrushOpacityPreview = document.getElementById('eraserBrushOpacityPre
             pencilColorPreview.style.backgroundColor = pencilSettings.color;
         }
         function updateEraserOpacityPreview() {
-    eraserBrushOpacityPreview.style.opacity = eraserSettings.opacity;
+    eraserBrushSizePreview.style.opacity = eraserSettings.opacity;
 }
         // Position panel above tool
         function positionPanel(panel, tool) {
@@ -4005,124 +4186,187 @@ function initScreenshotFunctionality() {
     });
 }
 
-// NEW: Take full page screenshot
+// // NEW: Take full page screenshot
 function takeFullPageScreenshot() {
     // Show processing overlay
     showScreenshotProcessing();
-    
+     $(".control-panel").addClass("screenshot-hide");
     // Hide tool container temporarily
     $(".tool-container").addClass("tool-container-hidden");
+     $(".secondmenubar").addClass("secondmenubar-hidden");
     
     // Small delay to ensure tool container is hidden before capture
-    setTimeout(function() {
-        // Remove processing overlay BEFORE capturing
-        $(".screenshot-processing").remove();
+    // setTimeout(function() {
+    //     // Remove processing overlay BEFORE capturing
+    //     $(".screenshot-processing").remove();
         
-        // Configure html2canvas options for full page capture
-        var options = {
-            backgroundColor: '#ffffff',
-            scale: 2, // High resolution
-            logging: false,
-            useCORS: true,
-            allowTaint: true,
-            scrollX: 0,
-            scrollY: 0,
-            width: document.documentElement.scrollWidth,
-            height: document.documentElement.scrollHeight,
-            windowWidth: document.documentElement.scrollWidth,
-            windowHeight: document.documentElement.scrollHeight,
-            onclone: function(clonedDoc) {
-                // Ensure all images are loaded in the clone
-                var images = clonedDoc.querySelectorAll('img');
-                var loadedImages = 0;
-                var totalImages = images.length;
+    //     // Configure html2canvas options for full page capture
+    //     var options = {
+    //         backgroundColor: '#ffffff',
+    //         scale: 2, // High resolution
+    //         logging: false,
+    //         useCORS: true,
+    //         allowTaint: true,
+    //         scrollX: 0,
+    //         scrollY: 0,
+    //         width: document.documentElement.scrollWidth,
+    //         height: document.documentElement.scrollHeight,
+    //         windowWidth: document.documentElement.scrollWidth,
+    //         windowHeight: document.documentElement.scrollHeight,
+    //         onclone: function(clonedDoc) {
+    //             // Ensure all images are loaded in the clone
+    //             var images = clonedDoc.querySelectorAll('img');
+    //             var loadedImages = 0;
+    //             var totalImages = images.length;
                 
-                if (totalImages === 0) {
-                    return Promise.resolve();
-                }
+    //             if (totalImages === 0) {
+    //                 return Promise.resolve();
+    //             }
                 
-                return new Promise(function(resolve) {
-                    images.forEach(function(img) {
-                        if (img.complete) {
-                            loadedImages++;
-                        } else {
-                            img.onload = function() {
-                                loadedImages++;
-                                if (loadedImages === totalImages) {
-                                    resolve();
-                                }
-                            };
-                            img.onerror = function() {
-                                loadedImages++;
-                                if (loadedImages === totalImages) {
-                                    resolve();
-                                }
-                            };
-                        }
-                    });
+    //             return new Promise(function(resolve) {
+    //                 images.forEach(function(img) {
+    //                     if (img.complete) {
+    //                         loadedImages++;
+    //                     } else {
+    //                         img.onload = function() {
+    //                             loadedImages++;
+    //                             if (loadedImages === totalImages) {
+    //                                 resolve();
+    //                             }
+    //                         };
+    //                         img.onerror = function() {
+    //                             loadedImages++;
+    //                             if (loadedImages === totalImages) {
+    //                                 resolve();
+    //                             }
+    //                         };
+    //                     }
+    //                 });
                     
-                    // Fallback timeout
-                    setTimeout(resolve, 100);
-                });
-            }
-        };
+    //                 // Fallback timeout
+    //                 setTimeout(resolve, 100);
+    //             });
+    //         }
+    //     };
         
-        // Capture the entire body
-        html2canvas(document.body, options).then(function(canvas) {
-            // Convert canvas to data URL
-            var dataURL = canvas.toDataURL("image/png");
+    //     // Capture the entire body
+    //     html2canvas(document.body, options).then(function(canvas) {
+    //         // Convert canvas to data URL
+    //         var dataURL = canvas.toDataURL("image/png");
             
-            // Create download link
-            var link = document.createElement('a');
-            var timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            link.download = 'math-tool-screenshot-' + timestamp + '.png';
-            link.href = dataURL;
+    //         // Create download link
+    //         var link = document.createElement('a');
+    //         var timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    //         link.download = 'math-tool-screenshot-' + timestamp + '.png';
+    //         link.href = dataURL;
             
-            // Trigger download
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+    //         // Trigger download
+    //         document.body.appendChild(link);
+    //         link.click();
+    //         document.body.removeChild(link);
             
-            // Restore tool container (no need to remove overlay since we already did)
-            restoreAfterScreenshot();
+    //         // Restore tool container (no need to remove overlay since we already did)
+    //         restoreAfterScreenshot();
             
-            console.log("Full page screenshot downloaded");
+    //         console.log("Full page screenshot downloaded");
             
-        }).catch(function(error) {
-            console.error("Error capturing full page screenshot:", error);
+    //     }).catch(function(error) {
+    //         console.error("Error capturing full page screenshot:", error);
             
-            // Restore UI even if there's an error
-            restoreAfterScreenshot();
+    //         // Restore UI even if there's an error
+    //         restoreAfterScreenshot();
             
-            // Fallback: Try simpler capture
-            try {
-                // Remove overlay for fallback too
-                $(".screenshot-processing").remove();
+    //         // Fallback: Try simpler capture
+    //         try {
+    //             // Remove overlay for fallback too
+    //             $(".screenshot-processing").remove();
                 
-                html2canvas(document.body, {
-                    backgroundColor: '#ffffff',
-                    scale: 1
-                }).then(function(canvas) {
-                    var dataURL = canvas.toDataURL("image/png");
-                    var link = document.createElement('a');
-                    var timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-                    link.download = 'math-tool-screenshot-' + timestamp + '.png';
-                    link.href = dataURL;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+    //             html2canvas(document.body, {
+    //                 backgroundColor: '#ffffff',
+    //                 scale: 1
+    //             }).then(function(canvas) {
+    //                 var dataURL = canvas.toDataURL("image/png");
+    //                 var link = document.createElement('a');
+    //                 var timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    //                 link.download = 'math-tool-screenshot-' + timestamp + '.png';
+    //                 link.href = dataURL;
+    //                 document.body.appendChild(link);
+    //                 link.click();
+    //                 document.body.removeChild(link);
                     
-                    restoreAfterScreenshot();
-                });
-            } catch (fallbackError) {
-                console.error("Fallback screenshot also failed:", fallbackError);
-                restoreAfterScreenshot();
-                alert("Screenshot failed. Please try again.");
-            }
-        });
+    //                 restoreAfterScreenshot();
+    //             });
+    //         } catch (fallbackError) {
+    //             console.error("Fallback screenshot also failed:", fallbackError);
+    //             restoreAfterScreenshot();
+    //             alert("Screenshot failed. Please try again.");
+    //         }
+    //     });
         
-    }, 300); // Wait for tool container to slide out
+    // }, 300); // Wait for tool container to slide out
+
+
+  setTimeout(function () {
+    $(".screenshot-processing").remove();
+
+    const options = {
+      backgroundColor: "#ffffff",
+      scale: 2,
+      logging: false,
+      useCORS: true,
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: 0,
+      width: document.documentElement.scrollWidth,
+      height: document.documentElement.scrollHeight,
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.scrollHeight,
+    };
+
+    html2canvas(document.body, options)
+      .then(function (canvas) {
+        // ✅ Include the drawing canvas manually
+        const drawCanvas = document.getElementById("draw");
+        if (drawCanvas) {
+          const ctx = canvas.getContext("2d");
+          const rect = drawCanvas.getBoundingClientRect();
+
+          // Draw the user's drawing onto the captured canvas
+          ctx.drawImage(
+            drawCanvas,
+            rect.left,
+            rect.top,
+            rect.width,
+            rect.height
+          );
+        }
+
+        const dataURL = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        link.download = "math-tool-screenshot-" + timestamp + ".png";
+        link.href = dataURL;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        restoreAfterScreenshot();
+        console.log("Screenshot (with canvas drawing) downloaded ✅");
+      })
+      .catch(function (error) {
+        console.error("Screenshot failed:", error);
+        restoreAfterScreenshot();
+        alert("Screenshot failed. Please try again.");
+      });
+  }, 300);
 }
+
+
+
+
+
+
 
 // NEW: Show screenshot processing overlay
 function showScreenshotProcessing() {
@@ -4153,8 +4397,12 @@ function showScreenshotProcessing() {
 // NEW: Restore UI after screenshot
 function restoreAfterScreenshot() {
     // Show tool container
+    $(".control-panel").removeClass("screenshot-hide");
     $(".tool-container").removeClass("tool-container-hidden");
     $(".tool-container").addClass("tool-container-visible");
+     $(".secondmenubar").removeClass("secondmenubar-hidden");
+ $(".secondmenubar").addClass("secondmenubar-visible");
+
     
     // Remove processing overlay (in case it wasn't removed already)
     $(".screenshot-processing").remove();
@@ -4168,48 +4416,7 @@ function restoreAfterScreenshot() {
     // Remove visible class after transition
     setTimeout(function() {
         $(".tool-container").removeClass("tool-container-visible");
+          $(".secondmenubar").removeClass("secondmenubar-hidden");
     }, 400);
 }
 
-// NEW: Alternative screenshot function that captures only the work area
-function takeWorkAreaScreenshot() {
-    showScreenshotProcessing();
-    
-    $(".tool-container").addClass("tool-container-hidden");
-    
-    setTimeout(function() {
-        // Remove processing overlay before capture
-        $(".screenshot-processing").remove();
-        
-        // Calculate the work area (everything except tool container)
-        var workArea = document.querySelector('[acc-id="act-container"]');
-        
-        if (!workArea) {
-            workArea = document.body;
-        }
-        
-        html2canvas(workArea, {
-            backgroundColor: '#ffffff',
-            scale: 2,
-            logging: false,
-            useCORS: true,
-            allowTaint: true
-        }).then(function(canvas) {
-            var dataURL = canvas.toDataURL("image/png");
-            var link = document.createElement('a');
-            var timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            link.download = 'math-work-area-' + timestamp + '.png';
-            link.href = dataURL;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            restoreAfterScreenshot();
-            
-        }).catch(function(error) {
-            console.error("Error capturing work area:", error);
-            restoreAfterScreenshot();
-        });
-        
-    }, 300);
-}
