@@ -4310,13 +4310,13 @@ function takeFullPageScreenshot() {
     $(".screenshot-processing").remove();
 
     const options = {
-      backgroundColor: "#ffffff",
+      backgroundColor: "#ffffff0c",
       scale: 2,
       logging: false,
       useCORS: true,
       allowTaint: true,
       scrollX: 0,
-      scrollY: 0,
+      scrollY: 60,
       width: document.documentElement.scrollWidth,
       height: document.documentElement.scrollHeight,
       windowWidth: document.documentElement.scrollWidth,
@@ -4417,6 +4417,7 @@ function restoreAfterScreenshot() {
     setTimeout(function() {
         $(".tool-container").removeClass("tool-container-visible");
           $(".secondmenubar").removeClass("secondmenubar-hidden");
-    }, 400);
+           $(".control-panel").removeClass("screenshot-hide");
+    }, 40);
 }
 

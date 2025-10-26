@@ -351,6 +351,7 @@ body {
 .screenshot-hide,
 .screenshot-hide * {
   visibility: hidden !important;
+  transition: visibility 0.3s ease-in-out;
 }
 
 .secondmenubar {
@@ -1017,6 +1018,19 @@ body{
  width: 25px !important;
     height: 25px !important;
 }
+.cubecnager label {
+    
+    font-size: 10px;
+    margin-left: 0px;
+    float: right;
+    margin-bottom: 6px;
+}
+.cubecnager {
+    margin-top: 10px;
+  }
+  .cubecnager .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    display: none;
+  }
 .cubecnager .select2-container .select2-selection--single, .cubecnager .select2-container
 
  {
@@ -1029,13 +1043,15 @@ body{
    
 }
 .cubecnager .select2-container--default .select2-selection--single .select2-selection__rendered {
-           line-height: 7px;
+              line-height: 9px;
         font-size: 9px;
         height: 19px;
-        padding-top: 6px;
+        padding-top: 4px;
         padding-left: 2px;
         /* position-area: right; */
         padding-right: 2px;
+
+        
 }
 
 #select2-themeSelect-results {
@@ -1078,10 +1094,11 @@ opacity: 1;
 
 .tool-container{
   width: 48px;
-    height: calc(100vh - 40px);
+    height: calc(100% - 40px);
   
      
 }
+
 .tool-container::-webkit-scrollbar {
   width: 2px;
 }
@@ -1509,6 +1526,12 @@ body input[type=range]::-ms-thumb:active {
 .secondmenubar .menubar-conatiner:nth-child(3){
  justify-content: flex-end !important;
 }
+.control-panel {
+    bottom: 40px !important;
+  }
+  .panel-title{
+    font-size: 13px;
+  }
 }
 
 
