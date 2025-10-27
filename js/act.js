@@ -1636,6 +1636,7 @@ function copyCube(cube) {
     }
     
     copiedIsLocked = false; // NEW: Always false for pasted cubes
+    // kk
     console.log("Cube copied (unlocked):", copiedCubeData.type);
     setTimeout(function() {
         undoreSaveState();
@@ -1701,6 +1702,33 @@ function pasteCube() {
             // }
         });
         
+         $("#grp" + newGrpId).find(".spearateCubes").hover(
+            function() {
+                if (isSelectedTool == "eraser") {
+                    return;
+                }
+                var hoverCurrentGrpCounter = $(this).parent().parent().attr("id").split("grp")[1];
+                var currentGrpCubeCount = 0;
+                $($("#grp" + hoverCurrentGrpCounter).find(".cubes-clone")).each(function(index) {
+                    if ($(this).is(":visible")) {
+                        currentGrpCubeCount = currentGrpCubeCount + 1;
+                    }
+                });
+
+                if (currentGrpCubeCount > 1) {
+                    if ($(this).parent().attr("newcubesid") != currentGrpCubeCount) {
+                        $(this).css({
+                            opacity: 1,
+                        });
+                    }
+                }
+            },
+            function() {
+                $(this).css({
+                    opacity: 0,
+                });
+            }
+        );
         // FIXED: Properly initialize connectors for pasted group
         currentGrpCounter = newGrpId;
         setCubesPosition();
@@ -1708,7 +1736,8 @@ function pasteCube() {
         makeGroupDraggable();
         addEvents();
         
-    } else {
+   
+      } else {
         // Paste single cube as new group
         var str = '<div style="position:absolute; display:inline-block; border:0px solid red;" class="grpCont topGrp" rotateval="0" id="grpCont' + 
                   newGrpId + '"><div class="hasGroup" rotateVal="0" id="grp' + 
@@ -1759,7 +1788,36 @@ function pasteCube() {
         // REMOVED: if (copiedIsLocked) { lockCube(clonedCube); }
         
         // FIXED: Ensure connectors are properly initialized for pasted single cube
+
+
         currentGrpCounter = newGrpId;
+                 $("#grp" + newGrpId).find(".spearateCubes").hover(
+            function() {
+                if (isSelectedTool == "eraser") {
+                    return;
+                }
+                var hoverCurrentGrpCounter = $(this).parent().parent().attr("id").split("grp")[1];
+                var currentGrpCubeCount = 0;
+                $($("#grp" + hoverCurrentGrpCounter).find(".cubes-clone")).each(function(index) {
+                    if ($(this).is(":visible")) {
+                        currentGrpCubeCount = currentGrpCubeCount + 1;
+                    }
+                });
+
+                if (currentGrpCubeCount > 1) {
+                    if ($(this).parent().attr("newcubesid") != currentGrpCubeCount) {
+                        $(this).css({
+                            opacity: 1,
+                        });
+                    }
+                }
+            },
+            function() {
+                $(this).css({
+                    opacity: 0,
+                });
+            }
+        );
         setCubesPosition();
         
         initCubeEvents(clonedCube);
@@ -3130,6 +3188,76 @@ function makeHoverHelperDroppable(hoverHelper) {
 
 // dddffdddd
 
+// function initTouchSupport() {
+//     var touchTimer;
+//     var longPressDuration = 500;
+//     var touchStartX, touchStartY;
+//     var touchMoved = false;
+    
+//     // Touch start event for cubes
+//     $(document).on('touchstart', '.cubes, .cubes-clone', function(e) {
+//         var touch = e.originalEvent.touches[0];
+//         touchStartX = touch.clientX;
+//         touchStartY = touch.clientY;
+//         touchMoved = false;
+        
+//         currentRightClickedCube = $(this);
+        
+//         touchTimer = setTimeout(function() {
+//             showCubeMenuForTouch(e, currentRightClickedCube);
+//         }, longPressDuration);
+        
+//         e.preventDefault();
+//     });
+    
+//     // Touch start event for empty areas
+//     $(document).on('touchstart', function(e) {
+//         if (!$(e.target).closest(".cubes, .cubes-clone, .grpCont, .tool-container").length) {
+//             var touch = e.originalEvent.touches[0];
+//             touchStartX = touch.clientX;
+//             touchStartY = touch.clientY;
+//             touchMoved = false;
+            
+//             currentRightClickedCube = null;
+            
+//             touchTimer = setTimeout(function() {
+//                 showEmptyAreaMenuForTouch(e);
+//             }, longPressDuration);
+//         }
+//     });
+    
+//     // Touch move event
+//     $(document).on('touchmove', function(e) {
+//         if (!touchTimer) return;
+        
+//         var touch = e.originalEvent.touches[0];
+//         var deltaX = Math.abs(touch.clientX - touchStartX);
+//         var deltaY = Math.abs(touch.clientY - touchStartY);
+        
+//         if (deltaX > 10 || deltaY > 10) {
+//             touchMoved = true;
+//             clearTimeout(touchTimer);
+//             touchTimer = null;
+//         }
+//     });
+    
+//     // Touch end event
+//     $(document).on('touchend', function(e) {
+//         clearTimeout(touchTimer);
+//         touchTimer = null;
+        
+//         if (!touchMoved && currentRightClickedCube && !currentRightClickedCube.hasClass('menu-shown')) {
+//             setTimeout(function() {
+//                 handleCubeTap(currentRightClickedCube);
+//             }, 100);
+//         }
+        
+//         setTimeout(function() {
+//             $('.cubes, .cubes-clone').removeClass('menu-shown');
+//         }, 500);
+//     });
+// }
+
 function initTouchSupport() {
     var touchTimer;
     var longPressDuration = 500;
@@ -3146,6 +3274,8 @@ function initTouchSupport() {
         currentRightClickedCube = $(this);
         
         touchTimer = setTimeout(function() {
+            // PREVENT CUBE SEPARATION: Don't trigger the spearate cubes functionality
+            // Just show the menu without allowing cube separation
             showCubeMenuForTouch(e, currentRightClickedCube);
         }, longPressDuration);
         
@@ -3183,14 +3313,21 @@ function initTouchSupport() {
         }
     });
     
-    // Touch end event
+    // Touch end event - PREVENT CUBE SEPARATION
     $(document).on('touchend', function(e) {
         clearTimeout(touchTimer);
         touchTimer = null;
         
+        // PREVENT CUBE SEPARATION: Remove the cube tap handling that causes separation
+        // Don't call handleCubeTap on long-press scenarios
         if (!touchMoved && currentRightClickedCube && !currentRightClickedCube.hasClass('menu-shown')) {
+            // Allow regular short taps for other interactions, but prevent separation
             setTimeout(function() {
-                handleCubeTap(currentRightClickedCube);
+                // Only handle regular clicks, not the separation logic
+                if (isSelectedTool == "eraser") {
+                    handleCubeTap(currentRightClickedCube);
+                }
+                // Otherwise, do nothing - prevent cube separation
             }, 100);
         }
         
@@ -3199,6 +3336,7 @@ function initTouchSupport() {
         }, 500);
     });
 }
+
 
 function showEmptyAreaMenuForTouch(e) {
     var touch = e.originalEvent.touches[0];
@@ -3250,6 +3388,27 @@ function showCubeMenuForTouch(e, cube) {
 }
 
 // NEW: Handle cube tap (short tap)
+// function handleCubeTap(cube) {
+//     if (!cube) return;
+    
+//     // Your existing click logic for cubes
+//     if (isCubeLocked(cube) && isSelectedTool == "") {
+//         return; // Prevent color changes when locked
+//     }
+    
+//     $(".clickable").css({ "pointer-events": "none" });
+//     setTimeout(function() {
+//         $(".clickable").css({ "pointer-events": "auto" });
+//     }, 200);
+    
+//     if (isDraggable) {
+//         return;
+//     }
+    
+//     // Continue with your existing cube click logic...
+//     // This should match what you have in the click handler
+// }
+// NEW: Handle cube tap (short tap) - PREVENT SEPARATION
 function handleCubeTap(cube) {
     if (!cube) return;
     
@@ -3267,10 +3426,111 @@ function handleCubeTap(cube) {
         return;
     }
     
-    // Continue with your existing cube click logic...
-    // This should match what you have in the click handler
-}
+    // PREVENT CUBE SEPARATION: Only allow eraser functionality on tap
+    // Don't execute the cube separation logic that was in the original click handler
+    if (isSelectedTool == "eraser") {
+        // Continue with your existing eraser logic...
+        var totalCubes = 0;
+        currentGrpCounter = cube.parent().attr("id").split("grp")[1];
 
+        //when we click cubes using eraser tool to delete it..
+        if (isSelectedTool == "eraser") {
+            var totalCubes = 0;
+            var object1 = document.getElementById(
+              "grpCont" + currentGrpCounter
+            );
+            var lastGrpPos = object1.getBoundingClientRect();
+
+            cube
+              .parents(".grpCont")
+              .find(".cubes-clone")
+              .each(function (index) {
+                totalCubes = totalCubes + 1;
+              });
+
+            currentActStatus = "eraseDrop";
+            currentObj = cube;
+            console.log("ccccccc ", currentGrpCounter);
+            $("#grpCont" + currentGrpCounter)
+              .find(".rotategrp")
+              .each(function (index) {
+                $(this).remove();
+              });
+
+            var cubeId = cube.attr("newcubesid");
+            cube
+              .parents(".grpCont")
+              .find(".cubes-clone")
+              .each(function (index) {
+                $(this).css({ top: "0px" });
+              });
+
+            if (totalCubes <= 1) {
+              cube.parents(".grpCont").remove();
+            } else {
+              cube.remove();
+            }
+
+            $("#grp" + currentGrpCounter)
+              .find(".cubes-clone")
+              .each(function (index) {
+                if (index > 0) {
+                  $(this).css({
+                    top:
+                      parseInt($(this).prev().css("top")) +
+                      parseInt($(this).prev().height() - connectorHt) +
+                      "px",
+                  });
+                }
+              });
+
+            setCubesPosition();
+
+            var rotateStr =
+              '<div class="rotategrp clickable" id="rotategrp1"><img src="assets/images/rotategroup.png"/></div><div class="rotategrp clickable" id="rotategrp2"><img src="assets/images/rotategroup.png"/></div><div class="rotategrp clickable" id="rotategrp3"><img src="assets/images/rotategroup.png"/></div><div class="rotategrp clickable" id="rotategrp4"><img src="assets/images/rotategroup.png"/></div>';
+
+            $("#grp" + currentGrpCounter).prepend(rotateStr);
+
+            var rotateGrpDiv = $("#grp" + currentGrpCounter).find(
+              "#rotategrp1"
+            );
+            $("#grp" + currentGrpCounter)
+              .find("#rotategrp1")
+              .css({ top: -19 + "px" });
+            $("#grp" + currentGrpCounter)
+              .find("#rotategrp4")
+              .css({ top: -19 + "px" });
+
+            if (newHtOfRotateGrp > 0) {
+              console.log("ht...... ");
+              $("#grpCont" + currentGrpCounter)
+                .find("#rotategrp2")
+                .css({ top: newHtOfRotateGrp + "px" });
+              $("#grpCont" + currentGrpCounter)
+                .find("#rotategrp3")
+                .css({ top: newHtOfRotateGrp + "px" });
+            }
+
+            $("#undo").addClass("enabled");
+            $("#undo").removeClass("disabled");
+
+            addEvents();
+            var zIndex = 0;
+            $(
+              $("#grp" + currentGrpCounter)
+                .find(".cubes-clone")
+                .get()
+                .reverse()
+            ).each(function (index) {
+              zIndex = zIndex + 1;
+              $(this).css({
+                "z-index": zIndex,
+              });
+            });
+        }
+    }
+    // PREVENT CUBE SEPARATION: Don't execute the separation logic for regular taps
+}
 
 // NEW: Toggle group count display
 function toggleGroupCountDisplay() {
