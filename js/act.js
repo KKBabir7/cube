@@ -1637,6 +1637,7 @@ function copyCube(cube) {
     
     copiedIsLocked = false; // NEW: Always false for pasted cubes
     // kk
+    
     console.log("Cube copied (unlocked):", copiedCubeData.type);
     setTimeout(function() {
         undoreSaveState();
@@ -1669,9 +1670,10 @@ function pasteCube() {
         
         // Position near original or at mouse position
         var pastePosition = getPastePosition();
+        var groupCount = $(".grpCont").length;
         newGroup.css({
             top: pastePosition.top + "px",
-            left: pastePosition.left + "px"
+            left: pastePosition.left + (groupCount * 5) + "px"
         });
         
         $(".drop-container").prepend(newGroup);
@@ -1883,7 +1885,7 @@ function downloadCubeAsPNG(cube) {
     tempContainer.style.top = '0';
     tempContainer.style.zIndex = '-9999';
     tempContainer.style.backgroundColor = 'white';
-    tempContainer.style.padding = '40px'; // Increased padding for rotation
+    tempContainer.style.padding = '0px'; // Increased padding for rotation
     
     // Clone the element
     var clone = $(elementToCapture).clone(true)[0];
@@ -1912,13 +1914,13 @@ function downloadCubeAsPNG(cube) {
     captureContainer.style.left = '-9999px';
     captureContainer.style.top = '0';
     captureContainer.style.zIndex = '-9999';
-    captureContainer.style.backgroundColor = 'white';
+    captureContainer.style.backgroundColor = 'transparent';
     captureContainer.style.width = expandedSize + 'px';
     captureContainer.style.height = expandedSize + 'px';
     captureContainer.style.display = 'flex';
     captureContainer.style.alignItems = 'center';
     captureContainer.style.justifyContent = 'center';
-    captureContainer.style.padding = '20px';
+    captureContainer.style.padding = '0px';
     
     // Clone the element again
     var finalClone = $(elementToCapture).clone(true)[0];
@@ -1927,8 +1929,8 @@ function downloadCubeAsPNG(cube) {
     
     // Configure html2canvas options
     var options = {
-        backgroundColor: '#ffffff',
-        scale: 2, // Good balance of quality and size
+        backgroundColor: 'transparent ',
+        scale: 1, // Good balance of quality and size
         logging: false,
         useCORS: true,
         removeContainer: true,
@@ -1982,8 +1984,8 @@ function downloadCubeAsPNG(cube) {
         // Fallback: Try simple capture
         try {
             html2canvas(elementToCapture, {
-                backgroundColor: '#ffffff',
-                scale: 2
+                backgroundColor: 'transparent',
+                scale: 1
             }).then(function(canvas) {
                 var dataURL = canvas.toDataURL("image/png");
                 var link = document.createElement('a');
@@ -2207,9 +2209,10 @@ function reenableGroupConnectors(groupContainer) {
     var originalGroup = originalCube.closest(".grpCont");
     if (originalGroup.length) {
         var originalPos = originalGroup.offset();
+        var groupCount = $(".grpCont").length;
         $("#grpCont" + newGrpId).css({
             top: (originalPos.top + 40) + "px",
-            left: (originalPos.left + 40) + "px"
+            left: (originalPos.left + 40 + (groupCount * 5)) + "px"
         });
     } else {
         // If original is in tool container, place in a default position in drop container
@@ -2226,7 +2229,16 @@ function reenableGroupConnectors(groupContainer) {
     
     // FIXED: Ensure connectors are properly initialized for duplicated cube
     currentGrpCounter = newGrpId;
+    setTimeout(function() {
     setCubesPosition();
+    
+    // Explicitly enable the bottom connector for the duplicated cube
+    var duplicatedCube = $("#grp" + newGrpId).find(".cubes-clone");
+    if (duplicatedCube.length) {
+        duplicatedCube.find(".downcont").addClass("enable");
+        duplicatedCube.find(".downcont").css("display", "block");
+    }
+}, 100);
     
     if (isOriginalLocked) {
         lockCube(clonedCube);
@@ -3035,31 +3047,69 @@ function setCubesPosition() {
         var groupContainer = $(this).closest(".grpCont");
         var isLocked = groupContainer.length ? isGroupLocked(groupContainer) : false;
         
-        if (!isLocked) {
-            if (cubePosition === 1) {
-                // First cube - enable top connector only
-                $(this).find(".uppercont").addClass("enable");
-                $(this).find(".downcont").removeClass("enable");
-                $(this).find(".uppercont").css({
-                    display: "block",
-                });
-            } else if (cubePosition === totalCubes) {
-                // Last cube - enable bottom connector only  
-                $(this).find(".uppercont").removeClass("enable");
-                $(this).find(".downcont").addClass("enable");
-                $(this).find(".downcont").css({
-                    display: "block",
-                });
-            } else {
-                // Middle cubes - disable both connectors
-                $(this).find(".uppercont").removeClass("enable");
-                $(this).find(".downcont").removeClass("enable");
-            }
-        } else {
-            // If group is locked, disable all connectors
-            $(this).find(".uppercont").removeClass("enable");
-            $(this).find(".downcont").removeClass("enable");
-        }
+        // if (!isLocked) {
+        //     if (cubePosition === 1) {
+        //         // First cube - enable top connector only
+        //         $(this).find(".uppercont").addClass("enable");
+        //         $(this).find(".downcont").removeClass("enable");
+        //         $(this).find(".uppercont").css({
+        //             display: "block",
+        //         });
+        //     } else if (cubePosition === totalCubes) {
+        //         // Last cube - enable bottom connector only  
+        //         $(this).find(".uppercont").removeClass("enable");
+        //         $(this).find(".downcont").addClass("enable");
+        //         $(this).find(".downcont").css({
+        //             display: "block",
+        //         });
+        //     } else {
+        //         // Middle cubes - disable both connectors
+        //         $(this).find(".uppercont").removeClass("enable");
+        //         $(this).find(".downcont").removeClass("enable");
+        //     }
+        // } else {
+        //     // If group is locked, disable all connectors
+        //     $(this).find(".uppercont").removeClass("enable");
+        //     $(this).find(".downcont").removeClass("enable");
+        // }
+
+if (!isLocked) {
+    var cubeId = $(this).attr("newcubesid");
+    
+    // FIX: When connecting to a single cube (totalCubes === 1), enable BOTH connectors
+    if (totalCubes === 1) {
+        $(this).find(".uppercont").addClass("enable");
+        $(this).find(".downcont").addClass("enable");
+        $(this).find(".uppercont").css({
+            display: "block",
+        });
+        $(this).find(".downcont").css({
+            display: "block",
+        });
+    } 
+    // First cube in multi-cube group
+    else if (cubeId == "1") {
+        $(this).find(".uppercont").addClass("enable");
+        $(this).find(".downcont").removeClass("enable");
+        $(this).find(".uppercont").css({
+            display: "block",
+        });
+    } 
+    // Last cube in multi-cube group  
+    else if (cubeId == totalCubes) {
+        $(this).find(".uppercont").removeClass("enable");
+        $(this).find(".downcont").addClass("enable");
+        $(this).find(".downcont").css({
+            display: "block",
+        });
+    } 
+    // Middle cubes in multi-cube group
+    else {
+        $(this).find(".uppercont").removeClass("enable");
+        $(this).find(".downcont").removeClass("enable");
+    }
+}
+        
     });
     
     var totalCubes = $("#grp" + grpCounter).find(".cubes-clone").length;
